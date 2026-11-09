@@ -1,0 +1,1357 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Inclusive Cards Router</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Caveat+Brush&display=swap">
+<style>
+/* Layout: Home = "Where Are You Now?" (intro cell + five route cards that open into a full-width path) then "Pick The Card You Need" (intro cell + all 20 cards). Card page = one card at a time (placeholder until the card designs arrive).
+   Colors are tokens on :root so the palette can be swapped in one place. */
+:root {
+  --bg: #fffbf1;
+  --fg: #111111;
+  --muted: #55514a;
+  --on-color-muted: #3b3830;
+  --line: #6b6b6b;
+  --rule: #cfc8b4;
+  --c-idea: #fdf6a7;
+  --c-users: #ffd0da;
+  --c-brain: #c0fdaf;
+  --c-design: #ffd596;
+  --c-live: #a0fcfc;
+  --btn-bg: #000000;
+  --btn-fg: #ffffff;
+  --go-bg: #6b6b6b;
+  --go-fg: #ffffff;
+  --ph: #c0c0c0;
+  --surface: #fffdf7;
+  --focus: #1a4fd0;
+  --accent: #0a5f73;
+  --accent-ink: #ffffff;
+  --accent-soft: #e6f1f0;
+  --st-orient: #7a4fb5;
+  --st-frame: #1f6fb5;
+  --st-ideate: #a86a00;
+  --st-iterate: #2a7a4a;
+  --st-optimize: #b03a48;
+  --font-body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-body);
+  --font-hand: "Figma Hand", "Caveat Brush", "Segoe Print", cursive;
+  --step-bg: #ffffff;
+  --tips-bg: #6b6b6b;
+  --tips-fg: #ffffff;
+  --pill-bg: #c0c0c0;
+  --pill-fg: #111111;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16140e;
+    --fg: #f6f2e7;
+    --muted: #bdb8aa;
+    --on-color-muted: #d9d4c6;
+    --line: #8d897d;
+    --rule: #3d3a30;
+    --c-idea: #4a4720;
+    --c-users: #4f2b35;
+    --c-brain: #2b4a29;
+    --c-design: #4f3b1c;
+    --c-live: #1d4a4a;
+    --btn-bg: #f6f2e7;
+    --btn-fg: #111111;
+    --go-bg: #b3ae9e;
+    --go-fg: #111111;
+    --ph: #3a372e;
+    --surface: #1e1b13;
+    --focus: #8ab4f8;
+    --accent: #6cc4d8;
+    --accent-ink: #08202a;
+    --accent-soft: #1b3440;
+    --st-orient: #b595e0;
+    --st-frame: #6aa8e6;
+    --st-ideate: #e0a43a;
+    --st-iterate: #62bb85;
+    --st-optimize: #e8808c;
+    --step-bg: #26231a;
+    --tips-bg: #4a463b;
+    --tips-fg: #f6f2e7;
+    --pill-bg: #3a372e;
+    --pill-fg: #f6f2e7;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16140e;
+  --fg: #f6f2e7;
+  --muted: #bdb8aa;
+  --on-color-muted: #d9d4c6;
+  --line: #8d897d;
+  --rule: #3d3a30;
+  --c-idea: #4a4720;
+  --c-users: #4f2b35;
+  --c-brain: #2b4a29;
+  --c-design: #4f3b1c;
+  --c-live: #1d4a4a;
+  --btn-bg: #f6f2e7;
+  --btn-fg: #111111;
+  --go-bg: #b3ae9e;
+  --go-fg: #111111;
+  --ph: #3a372e;
+  --surface: #1e1b13;
+  --focus: #8ab4f8;
+  --accent: #6cc4d8;
+  --accent-ink: #08202a;
+  --accent-soft: #1b3440;
+  --st-orient: #b595e0;
+  --st-frame: #6aa8e6;
+  --st-ideate: #e0a43a;
+  --st-iterate: #62bb85;
+  --st-optimize: #e8808c;
+  --step-bg: #26231a;
+  --tips-bg: #4a463b;
+  --tips-fg: #f6f2e7;
+  --pill-bg: #3a372e;
+  --pill-fg: #f6f2e7;
+  color-scheme: dark;
+}
+
+/* Sizes come from the Figma frame (1728 wide). --s is "one design pixel": 1px at 1728 and wider, shrinking in step below that, so spacing and the square route cards keep their ratio. Text never drops below a readable floor. */
+:root { --s: min(calc(100vw / 1728), 1px); --gap: max(0.75rem, calc(20 * var(--s))); --pad-v: max(1.1rem, calc(36 * var(--s))); --pad-h: max(1.25rem, calc(39 * var(--s))); --t-body: max(1rem, calc(24 * var(--s))); --btn: max(2.75rem, calc(60 * var(--s))); }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.5; margin: 0; padding-inline: max(1rem, calc(100 * var(--s))); padding-block: 0 max(1.5rem, calc(100 * var(--s))); }
+.wrap { max-width: 1528px; margin-inline: auto; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; line-height: 1.3; margin: 0; text-wrap: balance; overflow-wrap: break-word; }
+.pc, .refbtn, .pt-sum { overflow-wrap: break-word; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; text-underline-offset: 0.18em; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+[tabindex="-1"]:focus { outline: none; }
+.skip { position: absolute; left: 1rem; top: -4rem; background: var(--btn-bg); color: var(--btn-fg); padding: 0.6rem 1rem; border-radius: 6px; z-index: 10; }
+.skip:focus { top: 0.5rem; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+svg { display: block; flex: none; }
+
+/* Section headings: eyebrow 24/31 bold, title 80/104 bold, 60 below the title */
+.sec-head { padding-bottom: max(1.5rem, calc(60 * var(--s))); display: grid; gap: 0.25rem; }
+.eyebrow { display: flex; align-items: center; gap: 0.5rem; font-size: var(--t-body); line-height: 1.3; font-weight: 700; color: var(--muted); margin: 0; }
+.eyebrow svg { width: max(1.2rem, calc(30 * var(--s))); height: max(1.2rem, calc(30 * var(--s))); }
+.sec-head h1, .sec-head h2 { font-size: max(2.25rem, calc(80 * var(--s))); line-height: 1.3; }
+/* 200 between the sections and the footer line */
+.rule { border: 0; border-top: 2px solid var(--rule); margin: max(4rem, calc(200 * var(--s))) 0; }
+
+/* Intro cell: first cell of each grid, 24/31 semibold */
+.cell-intro { padding: var(--pad-v) var(--pad-h); display: grid; gap: 1.4em; align-content: start; font-weight: 600; font-size: var(--t-body); line-height: 1.3; }
+
+/* Route cards: square when closed (495 x 495 in the frame) */
+.routes { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); }
+@media (min-width: 40rem) { .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 60rem) { .routes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.routes > li { min-width: 0; }
+.routes > li.is-open { grid-column: 1 / -1; }
+
+.rc { background: var(--c); color: var(--fg); padding: var(--pad-v) var(--pad-h); display: flex; flex-direction: column; gap: 0; aspect-ratio: 1 / 1; font-size: var(--t-body); }
+.rc h2 { font-size: max(1.65rem, calc(50 * var(--s))); line-height: 1.3; font-weight: 700; margin: 0; }
+.rc-desc { font-size: var(--t-body); line-height: 1.3; font-weight: 600; margin-top: 5px; }
+.c-idea { --c: var(--c-idea); }
+.c-users { --c: var(--c-users); }
+.c-brain { --c: var(--c-brain); }
+.c-design { --c: var(--c-design); }
+.c-live { --c: var(--c-live); }
+
+.toggle { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; min-height: var(--btn); background: none; border: 0; padding: 0; cursor: pointer; font-weight: 700; font-size: var(--t-body); line-height: 1.3; text-align: left; border-radius: 6px; }
+.box { display: inline-flex; align-items: center; justify-content: center; width: var(--btn); height: var(--btn); background: var(--btn-bg); color: var(--btn-fg); border-radius: 8px; flex: none; }
+.box svg { width: 50%; height: 50%; }
+.toggle .i-minus { display: none; }
+.rc.is-open { aspect-ratio: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 max(2rem, calc(50 * var(--s))); align-content: start; }
+.rc.is-open .toggle { margin-top: var(--gap); width: auto; justify-self: start; justify-content: flex-start; gap: 0.75rem; flex-direction: row-reverse; font-size: max(1rem, calc(20 * var(--s))); }
+.rc.is-open .toggle .box { width: max(2.5rem, calc(44 * var(--s))); height: max(2.5rem, calc(44 * var(--s))); }
+.rc.is-open .toggle .i-plus { display: none; }
+.rc.is-open .toggle .i-minus { display: block; }
+
+.panel:not([hidden]) { display: contents; }
+.details { display: grid; gap: var(--gap); margin: var(--gap) 0 0; align-content: start; }
+.details dt { font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 600; color: var(--on-color-muted); margin: 0 0 5px; }
+.details dd { margin: 0; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 600; }
+.people { display: inline-flex; align-items: center; gap: 0.5rem; }
+.people svg { width: 1.5rem; height: 1.5rem; }
+
+.steps { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; padding-top: 0.5rem; margin-top: max(1.5rem, calc(50 * var(--s))); }
+.steps-label { font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 600; margin: 0; }
+.tl { position: relative; display: grid; gap: 1rem; padding-left: 1.75rem; font-size: max(1rem, calc(20 * var(--s))); }
+.tl::before { content: ""; position: absolute; left: 0.3rem; top: 0.7rem; bottom: 0.7rem; width: 2px; background: var(--on-color-muted); opacity: 0.7; }
+.tl > li { position: relative; font-weight: 600; line-height: 1.3; }
+.tl > li::before { content: ""; position: absolute; left: -1.75rem; top: 0.45em; width: 0.65rem; height: 0.65rem; border-radius: 50%; background: var(--on-color-muted); }
+.tl a { text-decoration: underline; text-decoration-thickness: 1px; }
+.tl a:hover { text-decoration-thickness: 2px; }
+.sub, .choose-label { display: block; font-weight: 400; font-size: max(1rem, calc(18 * var(--s))); line-height: 1.28; color: var(--on-color-muted); }
+.choose { display: grid; gap: 0.6rem; margin-top: 0.3rem; }
+.more { font-weight: 600; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; padding-left: 1.75rem; margin: 0; }
+.go { display: inline-flex; align-items: center; gap: 1rem; align-self: flex-end; margin-top: auto; min-height: var(--btn); font-weight: 700; font-size: var(--t-body); line-height: 1.3; text-decoration: none; }
+.go:hover .box, .go:focus-visible .box { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+@media (min-width: 48rem) {
+  .rc.is-open { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; grid-template-areas: "title steps" "desc steps" "details steps" "toggle steps"; }
+  .rc.is-open .steps { margin-top: 0; }
+  .rc.is-open .toggle { align-self: end; }
+  .rc.is-open h2 { grid-area: title; }
+  .rc.is-open .rc-desc { grid-area: desc; }
+  .rc.is-open .toggle { grid-area: toggle; }
+  .rc.is-open .details { grid-area: details; }
+  .rc.is-open .steps { grid-area: steps; }
+}
+
+/* Pick grid: radius 20, same padding, title 40/52 bold, 20 apart */
+.pick { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); }
+@media (min-width: 40rem) { .pick { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 60rem) { .pick { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.pt { position: relative; display: flex; flex-direction: column; gap: 0; padding: var(--pad-v) var(--pad-h); border: 2px solid var(--line); border-radius: 20px; background: transparent; font-size: var(--t-body); }
+.pt:hover { border-color: var(--fg); }
+.pt:has(a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+.ph-img { aspect-ratio: 3 / 1; background: var(--ph); border-radius: 8px; margin-bottom: 0.9rem; }
+.name-row { display: flex; gap: 0.6rem; align-items: baseline; }
+.ph-icon { width: max(1.1rem, calc(30 * var(--s))); height: max(1.1rem, calc(30 * var(--s))); background: var(--ph); flex: none; transform: translateY(0.1rem); }
+.pt h3 { font-size: max(1.5rem, calc(40 * var(--s))); line-height: 1.3; font-weight: 700; }
+.pt h3 a { text-decoration: none; }
+.pt h3 a:focus-visible { outline: none; }
+.pt h3 a::after { content: ""; position: absolute; inset: 0; border-radius: 18px; }
+.kind { font-size: max(1rem, calc(20 * var(--s))); font-weight: 700; color: var(--muted); margin-top: 5px; }
+.pt-sum { font-size: var(--t-body); line-height: 1.3; font-weight: 600; margin-top: 5px; }
+.pt-go { margin-top: auto; padding-top: 0.5rem; align-self: flex-end; display: inline-flex; align-items: center; gap: 1rem; font-weight: 700; font-size: var(--t-body); line-height: 1.3; min-height: var(--btn); }
+.pt-go .box { background: var(--go-bg); color: var(--go-fg); }
+.pt:hover .pt-go .box { background: var(--btn-bg); color: var(--btn-fg); }
+
+/* Footer: 200 below the pick section, line 20 above the text, text 20/20 regular */
+footer { margin-top: max(4rem, calc(200 * var(--s))); padding-top: 1.25rem; border-top: 2px solid var(--rule); color: var(--muted); font-size: 20px; font-weight: 400; line-height: 1.35; display: grid; gap: 0.35rem; }
+@media (min-width: 60rem) { footer { line-height: 1; } }
+
+/* Card page, from the Figma template. Same scale unit (--s) as the home page. */
+:root { --sec: max(1.5rem, calc(48 * var(--s))); --panel-w: max(12rem, calc(268 * var(--s))); }
+body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
+.return { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; padding: 0; background: none; border: 0; cursor: pointer; font-size: max(1.125rem, calc(30 * var(--s))); line-height: 1.3; font-weight: 600; color: var(--fg); border-radius: 6px; }
+.return svg { width: 1.1em; height: 1.1em; }
+.cp-top { display: grid; gap: 0.5rem; margin-top: max(1rem, calc(40 * var(--s))); }
+.group { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-size: var(--t-body); line-height: 1.3; font-weight: 700; }
+.cp-top h1 { font-size: max(2.25rem, calc(64 * var(--s))); line-height: 1.3; font-weight: 700; letter-spacing: -0.005em; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem max(1.5rem, calc(40 * var(--s))); margin: 0; font-size: var(--t-body); line-height: 1.3; font-weight: 700; color: var(--muted); }
+.meta > * { display: inline-flex; align-items: center; gap: 0.5rem; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sec) max(2rem, calc(100 * var(--s))); margin-top: max(2rem, calc(70 * var(--s))); }
+@media (min-width: 60rem) { .cols { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); grid-template-areas: "left right" "bottom right"; grid-template-rows: auto 1fr; align-items: start; } .left { grid-area: left; } .right { grid-area: right; } .bottom { grid-area: bottom; } }
+.left, .right, .bottom { display: grid; gap: var(--sec); align-content: start; min-width: 0; }
+.blk h2 { font-size: var(--t-body); line-height: 1.3; font-weight: 700; margin: 0 0 5px; }
+.blk p { font-size: var(--t-body); line-height: 1.3; font-weight: 500; }
+.blk p + p { margin-top: 0.75rem; }
+
+.steps-ol { display: grid; gap: max(2.25rem, calc(42 * var(--s))); counter-reset: n; margin-top: max(1.5rem, calc(34 * var(--s))); padding-left: max(0.5rem, calc(12 * var(--s))); }
+.steps-ol > li { counter-increment: n; position: relative; background: var(--step-bg); border-radius: 30px 38px 28px 40px / 38px 28px 40px 30px; padding: max(1.75rem, calc(40 * var(--s))) max(1.25rem, calc(31 * var(--s))) max(1.1rem, calc(30 * var(--s))); font-size: var(--t-body); line-height: 1.3; font-weight: 400; }
+.steps-ol > li::before { content: counter(n) "."; position: absolute; left: calc(-1 * max(0.7rem, calc(17 * var(--s)))); top: calc(-1 * max(0.8rem, calc(20 * var(--s)))); display: flex; align-items: center; justify-content: center; width: max(2.75rem, calc(64 * var(--s))); height: max(2.75rem, calc(64 * var(--s))); border-radius: 50%; background: var(--ph); color: var(--fg); font-size: max(1.25rem, calc(32 * var(--s))); line-height: 1.3; font-weight: 700; }
+.steps-ol ul { margin: 0; padding-left: 1.5rem; list-style: disc; }
+.steps-ol li li { padding: 0; }
+.steps-ol a { color: var(--muted); }
+.who { display: inline-block; margin-top: 0.5rem; padding: 0 0.6rem; border: 1px solid var(--line); border-radius: 999px; font-size: max(1rem, calc(18 * var(--s))); line-height: 1.5; color: var(--muted); }
+
+.refs { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: max(1rem, calc(24 * var(--s))); }
+.refbtn { display: inline-flex; align-items: center; gap: 0.7rem; min-height: max(3rem, calc(66 * var(--s))); padding: 0.4rem 0.5rem 0.4rem max(0.75rem, calc(15 * var(--s))); background: var(--pill-bg); color: var(--pill-fg); border-radius: 999px; text-decoration: none; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 400; }
+.refbtn .ph-icon { background: #6b6b6b; transform: none; width: max(1rem, calc(22 * var(--s))); height: max(1rem, calc(22 * var(--s))); }
+.refbtn .circ { display: inline-flex; align-items: center; justify-content: center; width: max(2.25rem, calc(48 * var(--s))); height: max(2.25rem, calc(48 * var(--s))); border-radius: 50%; background: var(--bg); color: var(--fg); margin-left: 0.5rem; }
+.refbtn .circ svg { width: 50%; height: 50%; }
+.refbtn:hover .circ { background: var(--fg); color: var(--bg); }
+
+.tips { background: var(--tips-bg); color: var(--tips-fg); border-radius: 34px 22px 38px 26px / 24px 36px 22px 34px; padding: max(1.25rem, calc(40 * var(--s))) max(1.25rem, calc(30 * var(--s))); }
+.tips h2 { font-family: var(--font-hand); font-size: max(1.75rem, calc(40 * var(--s))); line-height: 1.25; font-weight: 400; margin: 0 0 0.25rem; }
+.tips p { font-size: var(--t-body); line-height: 1.3; font-weight: 400; }
+
+.record { margin-top: max(1.5rem, calc(34 * var(--s))); padding: 0.75rem 1rem; border-left: 4px solid var(--fg); background: var(--step-bg); border-radius: 0 12px 12px 0; font-size: var(--t-body); line-height: 1.3; font-weight: 400; }
+.record strong { display: block; font-weight: 700; margin-bottom: 5px; }
+.source { margin-top: max(1.5rem, calc(40 * var(--s))); font-size: max(1rem, calc(18 * var(--s))); line-height: 1.4; color: var(--muted); }
+.site-head { height: max(4.5rem, calc(100 * var(--s))); display: flex; align-items: center; }
+.site-link { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; text-decoration: none; font-size: var(--t-body); line-height: 1.3; font-weight: 700; border-radius: 6px; }
+.site-icon { width: max(1.75rem, calc(44 * var(--s))); height: max(1.75rem, calc(44 * var(--s))); background: var(--ph); border-radius: 8px; flex: none; }
+.notice { border-left: 4px solid var(--fg); padding: 0.75rem 1rem; font-size: var(--t-body); line-height: 1.3; font-weight: 500; background: var(--step-bg); border-radius: 0 12px 12px 0; }
+.notice a { font-weight: 700; }
+
+/* Continue With This Path: the left panel stays put, the cards scroll under it */
+.path { margin-top: max(4rem, calc(200 * var(--s))); display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+.scroll-hint { display: flex; align-items: center; justify-self: end; gap: 1.25rem; margin: 0; padding: 0.25rem 0; min-height: 2.75rem; background: none; border: 0; cursor: pointer; border-radius: 6px; font-family: inherit; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 600; color: var(--muted); }
+.scroll-hint:hover { color: var(--fg); }
+.path-scroll, .path-cards { scrollbar-width: none; }
+.path-scroll::-webkit-scrollbar, .path-cards::-webkit-scrollbar { display: none; }
+.scroll-hint svg { width: max(4rem, calc(190 * var(--s))); height: 1.5rem; color: var(--ph); }
+.path-scroll { display: flex; align-items: stretch; overflow-x: auto; scroll-padding-inline-start: calc(var(--panel-w) + 2rem); padding-bottom: 0.75rem; }
+.path-panel { position: sticky; left: 0; z-index: 2; flex: none; width: calc(var(--panel-w) + max(1rem, calc(40 * var(--s)))); padding-right: max(1rem, calc(40 * var(--s))); background: var(--bg); }
+.path-panel h2 { font-size: var(--t-body); line-height: 1.3; font-weight: 700; margin: 0 0 0.75rem; }
+.path-panel p { font-size: var(--t-body); line-height: 1.3; font-weight: 500; }
+.path-cards { display: flex; align-items: flex-start; gap: max(1rem, calc(60 * var(--s))); }
+.pc { display: grid; gap: 0.6rem; width: max(8.5rem, calc(197 * var(--s))); text-align: center; text-decoration: none; font-size: var(--t-body); line-height: 1.3; font-weight: 700; }
+.pc .tile { aspect-ratio: 1 / 1; background: var(--ph); border-radius: 20px; }
+.pc small { display: block; font-size: max(1rem, calc(18 * var(--s))); font-weight: 400; color: var(--muted); }
+.pc:hover .tile { background: var(--line); }
+.pc:focus-visible { outline-offset: 4px; }
+.path-end { font-weight: 500; }
+.change { display: inline-flex; align-items: center; gap: 0.75rem; justify-self: start; min-height: 2.75rem; padding-bottom: 0.6rem; border-bottom: 2px solid var(--fg); font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 600; text-decoration: none; margin-top: 0.75rem; }
+.change .circ { display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--go-bg); color: var(--go-fg); }
+.change .circ svg { width: 60%; height: 60%; }
+@media (max-width: 47.99rem) {
+  .path-scroll { display: block; overflow: visible; }
+  .path-panel { position: static; width: auto; padding: 0 0 1rem; }
+  .path-cards { overflow-x: auto; padding-bottom: 0.75rem; scroll-padding-inline-start: 0; }
+}
+
+/* Examples of Mismatch (reference card with a selectable carousel). Sizes from the Figma template at 1728 wide: rows 220 tall (heading 60/78 with 50.5 above and below), sections 80 apart, cards 20 apart. */
+:root { --sec80: max(3rem, calc(80 * var(--s))); --bodyp: max(1rem, calc(100 * var(--s))); --mm-w: max(8.5rem, calc(218 * var(--s))); --mm-b: max(5px, calc(8 * var(--s))); --sel-bg: #e0dcd4; --sel-line: #7d7b76; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sel-bg: #35322a; --sel-line: #a39f92; } }
+:root[data-theme="dark"] { --sel-bg: #35322a; --sel-line: #a39f92; }
+.mm-main { margin-top: var(--sec80); display: grid; gap: var(--sec80); }
+.mm-sec { display: grid; min-width: 0; }
+.sec-label { font-size: var(--t-body); line-height: 1.3; font-weight: 700; margin: 0 0 var(--gap); }
+.mm-img { display: block; background: var(--ph); width: 100%; height: max(7rem, calc(179 * var(--s))); }
+.mm-rows { border-top: 1px solid var(--line); }
+.mm-row { display: grid; grid-template-columns: minmax(0, 1fr) max(8rem, calc(739 * var(--s))); gap: 0 var(--gap); align-items: center; padding-block: var(--gap); border-bottom: 1px solid var(--line); }
+.mm-row h3 { font-size: max(2rem, calc(60 * var(--s))); line-height: 1.3; font-weight: 700; padding-block: max(1rem, calc(50.5 * var(--s))); }
+.mm-steps { border-top: 1px solid var(--line); }
+.mm-step { display: grid; grid-template-columns: max(5rem, calc(100 * var(--s))) minmax(0, 1fr); gap: 0 max(1rem, calc(40 * var(--s))); align-items: center; min-height: max(7rem, calc(220 * var(--s))); padding-block: var(--gap); }
+.mm-step.has-img { grid-template-columns: max(5rem, calc(100 * var(--s))) minmax(0, 1fr) max(8rem, calc(669 * var(--s))); }
+.mm-step:first-child { border-bottom: 1px solid var(--line); }
+.mm-pill { display: flex; align-items: center; justify-content: center; height: max(2.75rem, calc(60 * var(--s))); background: var(--pill-bg); color: var(--pill-fg); border-radius: 28px 34px 26px 36px / 34px 26px 36px 28px; font-size: max(1rem, calc(22 * var(--s))); line-height: 1.3; font-weight: 700; }
+.mm-st h3 { font-size: var(--t-body); line-height: 1.3; font-weight: 700; margin: 0 0 5px; }
+.mm-st p { font-size: var(--t-body); line-height: 1.3; font-weight: 400; }
+.mm-note { margin: var(--gap) 0 0.6rem; font-size: var(--t-body); line-height: 1.3; font-weight: 700; }
+.mm-fs { border: 0; padding: 0; margin: 0; min-width: 0; }
+.mm-hint-row { display: flex; justify-content: flex-end; }
+.mm-scroll { overflow-x: auto; scrollbar-width: none; padding: 8px 8px 8px 8px; margin: -8px calc(-1 * var(--bodyp)) -8px -8px; padding-inline-end: var(--bodyp); }
+.mm-scroll::-webkit-scrollbar { display: none; }
+.mm-cards { display: flex; gap: var(--gap); width: max-content; }
+.mm-cards > li { flex: none; display: flex; }
+.mm { position: relative; display: flex; cursor: pointer; }
+.mm input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.mm-card { position: relative; display: grid; flex: 1; gap: 0.5rem; align-content: start; width: calc(var(--mm-w) + 2 * (var(--mm-b) + 2px)); padding: 2px 2px 0.5rem; border: var(--mm-b) solid transparent; border-radius: 18px 24px 16px 26px / 24px 16px 26px 18px; text-align: center; }
+.mm-tile { display: block; width: var(--mm-w); aspect-ratio: 218 / 249; background: var(--ph); border-radius: 10px; }
+.mm-name { font-size: var(--t-body); line-height: 1.3; font-weight: 500; overflow-wrap: break-word; padding-inline: 0.25rem; }
+.mm:hover input:not(:checked) + .mm-card .mm-tile { background: var(--line); }
+.mm input:checked + .mm-card { background: var(--sel-bg); border-color: var(--sel-line); }
+.mm input:checked + .mm-card .mm-tile { background: transparent; }
+.mm input:focus-visible + .mm-card { outline: 3px solid var(--focus); outline-offset: 3px; }
+.mm-check { display: none; position: absolute; top: calc(-1 * var(--mm-b) + max(0.4rem, calc(12 * var(--s)))); right: calc(-1 * var(--mm-b) + max(0.4rem, calc(12 * var(--s)))); width: max(1.5rem, calc(30 * var(--s))); height: max(1.5rem, calc(30 * var(--s))); align-items: center; justify-content: center; border-radius: 50%; background: var(--go-bg); color: var(--go-fg); }
+.mm-check svg { width: 70%; height: 70%; }
+.mm input:checked + .mm-card .mm-check { display: flex; }
+.mm-list { margin-top: var(--sec80); }
+.mm-list-h { font-size: var(--t-body); line-height: 1.3; font-weight: 700; margin: 0 0 var(--gap); padding-inline-start: var(--gap); }
+.mm-list-h:focus { outline: none; }
+.mm-picked { display: flex; flex-wrap: wrap; gap: var(--gap); padding-inline-start: var(--gap); }
+.mm-chip { position: relative; display: grid; gap: 0.4rem; align-content: start; width: calc(max(6rem, calc(97 * var(--s))) + 6px); padding: 3px; background: none; border: 0; border-radius: 8px; font: inherit; color: inherit; cursor: pointer; text-align: center; }
+.mm-chip .mm-tile { width: max(6rem, calc(97 * var(--s))); aspect-ratio: 97 / 112; }
+.mm-chip .mm-name { padding-inline: 0; font-size: max(1rem, calc(20 * var(--s))); }
+.mm-chip:hover .mm-tile { background: var(--line); }
+.mm-x { position: absolute; top: 8px; right: 8px; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--go-bg); color: var(--go-fg); }
+.mm-x svg { width: 65%; height: 65%; }
+.mm-empty { padding-inline-start: var(--gap); font-size: var(--t-body); line-height: 1.3; font-weight: 400; color: var(--muted); }
+.mm-end { padding-bottom: max(1.5rem, calc(40 * var(--s))); border-bottom: 1px solid var(--line); }
+/* The other reference cards: example cards in rows, 20 apart, cells 10 padding around a 218 x 249 tile */
+:root { --ex-pad: max(6px, calc(10 * var(--s))); --ex-in: max(1rem, calc(36 * var(--s))); }
+.ex-cards { display: flex; flex-wrap: wrap; gap: var(--gap); }
+.ex-card { display: grid; gap: var(--ex-pad); align-content: start; width: calc(var(--mm-w) + 2 * var(--ex-pad)); padding: var(--ex-pad); text-align: center; }
+.ex-type { display: none; font-size: max(1rem, calc(18 * var(--s))); line-height: 1.3; color: var(--muted); }
+.ex-box { border-top: 1px solid var(--line); }
+.ex-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; align-items: center; padding: var(--gap) var(--ex-in); border-bottom: 1px solid var(--line); }
+.ex-row h3 { font-size: max(2rem, calc(60 * var(--s))); line-height: 1.3; font-weight: 700; }
+.ex-strip { padding: var(--gap) 0; border-block: 1px solid var(--line); }
+.ex-head { display: none; }
+@media (min-width: 72rem) {
+  .ex-row { grid-template-columns: minmax(0, 1fr) auto; gap: 0 var(--gap); }
+  .ex-row .ex-cards { flex-wrap: nowrap; justify-content: flex-end; }
+  .ex-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: var(--gap) var(--ex-in); border-bottom: 1px solid var(--line); }
+  .ex-th-row { display: flex; gap: var(--gap); }
+  .ex-th { width: calc(var(--mm-w) + 2 * var(--ex-pad)); text-align: center; font-size: var(--t-body); line-height: 1.3; font-weight: 700; }
+}
+@media (max-width: 71.99rem) { .ex-type { display: block; } }
+@media (max-width: 47.99rem) {
+  .mm-row { grid-template-columns: minmax(0, 1fr); }
+  .mm-step, .mm-step.has-img { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+  .mm-pill { width: 5rem; }
+}
+
+@media (prefers-reduced-motion: no-preference) { .pt, .pt-go .box { transition: border-color 0.15s, background-color 0.15s; } }
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="site-head">
+    <a class="site-link" href="#"><span class="site-icon" aria-hidden="true"></span><span>Website Title</span></a>
+  </header>
+  <main id="main">
+    <div id="home">
+      <header class="sec-head">
+        <p class="eyebrow">Start Here <span data-smile></span></p>
+        <h1 id="home-title" tabindex="-1">Where Are You Now?</h1>
+      </header>
+
+      <ul class="routes" id="routes" aria-label="Where are you now? Choose the closest match">
+        <li class="cell-intro">
+          <p>Tell us what you already have. We'll point you to the activities that fit.</p>
+          <p>Pick the closest match. If two fit, choose the one nearer to the work you need to do this week.</p>
+          <p>You don't have to finish every activity on a path. Your project may change as you go, so feel free to explore other activities.</p>
+        </li>
+      </ul>
+      <hr class="rule">
+
+      <section aria-labelledby="pick-title">
+        <header class="sec-head">
+          <p class="eyebrow">You Know What You Are Looking For <span data-smile></span></p>
+          <h2 id="pick-title">Pick What You Need</h2>
+        </header>
+        <ul class="pick" id="pick">
+          <li class="cell-intro">
+            <p>You already know what you need.</p>
+            <p>Pick a specific activity or reference card from all 20 in one list.</p>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <div id="card" hidden></div>
+    <p id="status" class="sr" role="status" aria-live="polite"></p>
+  </main>
+
+  <footer>
+    <p>Draft prototype for a graduate design research project. The redesign is based on interviews with industry designers (six in total).</p>
+    <p>The Inclusive Activity Cards were created by Microsoft. This prototype is not made or endorsed by Microsoft. Only two activities are redesigned here. For the rest, use the link on each activity to read Microsoft's original.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var ORIGINAL = "https://inclusive.microsoft.design/articles/inclusive-activity-cards";
+  /* The brief says "hover". Hover-to-open moves the layout under the pointer and does not work for keyboard or touch, so the default is click, Enter, Space and tap. Set to true to also open on hover (mouse users only, after a short pause). */
+  var HOVER_OPEN = false;
+
+  var STAGES = {
+    orient:   { label: "Get Oriented", color: "var(--st-orient)",   shape: "circle" },
+    frame:    { label: "Frame",        color: "var(--st-frame)",    shape: "square" },
+    ideate:   { label: "Ideate",       color: "var(--st-ideate)",   shape: "triangle" },
+    iterate:  { label: "Iterate",      color: "var(--st-iterate)",  shape: "diamond" },
+    optimize: { label: "Optimize",     color: "var(--st-optimize)", shape: "hexagon" }
+  };
+  var SHAPES = {
+    circle:   '<circle cx="8" cy="8" r="7"/>',
+    square:   '<rect x="1.5" y="1.5" width="13" height="13" rx="1"/>',
+    triangle: '<polygon points="8,1 15,14.5 1,14.5"/>',
+    diamond:  '<polygon points="8,0.8 15.2,8 8,15.2 0.8,8"/>',
+    hexagon:  '<polygon points="4.5,1.5 11.5,1.5 15,8 11.5,14.5 4.5,14.5 1,8"/>'
+  };
+
+  /* All 20 cards: 13 activity cards, then 7 reference cards. Redesigned cards have full content in REDESIGNED. The rest carry a summary and link to Microsoft's original. */
+  var CARDS = {
+    "computer-trust": { name: "Computer Trust", stage: "orient", summary: "Explore why people trust or distrust technology, in a quick fill-in-the-blank exercise.", need: "", who: "Group discussion, about 5 minutes." },
+    "persona-spectrum": { name: "Create A Persona Spectrum", stage: "frame", summary: "Interview someone with a permanent limitation, then map how similar limits show up temporarily and situationally.", need: "Someone with a permanent limitation you can interview.", who: "You and the person you interview." },
+    "persona-network": { name: "Persona Network", stage: "frame", summary: "Map the people in one person's daily life to spot mismatches with their environment.", need: "A specific person you've already learned about.", who: "Not stated on the original card." },
+    "interaction-diary": { name: "Interaction Diary", stage: "frame", summary: "Observe people interacting with each other, objects, and technology to spot mismatches.", need: "A place where you can observe people.", who: "Works solo." },
+    "human-analogy": { name: "Human Analogy", stage: "frame", summary: "Compare your technology to a human role (assistant, teacher) and interview people who do that job.", need: "A technology solution whose behavior you're designing, and people in matching jobs to interview.", who: "Alone or in a group, plus interviews." },
+    "mismatch-1": { name: "Mismatch To Solution I", stage: "ideate", summary: "Turn a list of mismatches into “how might we” questions and pick your top three.", need: "A list of mismatches from your research.", who: "Not stated on the original card." },
+    "mismatch-2": { name: "Mismatch To Solution II", stage: "ideate", summary: "Brainstorm solutions to your top three on sticky notes, then cluster them.", need: "Your top three from Mismatch To Solution I.", who: "Solo brainstorm, then group share." },
+    "design-micro": { name: "Design A Microinteraction", stage: "ideate", redesigned: true },
+    "evaluate-tech": { name: "Evaluate Technology's Role", stage: "ideate", summary: "Check whether the technology you chose is the simplest or most fitting for the goal.", need: "Design concepts or an existing prototype.", who: "Not stated on the original card." },
+    "lofi-prototype": { name: "Low-Fidelity Prototype", stage: "iterate", redesigned: true },
+    "simulations": { name: "Simulations", stage: "iterate", summary: "Recreate a temporary or situational limitation yourself and walk through your design.", need: "Your sequence of steps and a prototype.", who: "Solo." },
+    "context-match": { name: "Context And Capability Match", stage: "optimize", summary: "Combine a context with a limitation and see how your solution adapts.", need: "Your solution or scenario.", who: "Not stated on the original card, which says to allow plenty of time." },
+    "situational": { name: "Situational Adaptation", stage: "optimize", summary: "Combine physical, social, and time-of-day contexts and list the limits your product hits.", need: "Your solution.", who: "Not stated on the original card." },
+
+    "persona-spectrum-ref": { name: "The Persona Spectrum", ref: true, summary: "Shows one limitation across permanent, temporary, and situational versions. A quick way to build empathy and see how a solution can reach a broader audience." },
+    "examples-mismatch": { name: "Examples of Mismatch", ref: true, summary: "Examples of how exclusion comes from mismatched interactions between people, between people and environments, and between people and objects." },
+    "limits": { name: "Temporary/Situational Limit", ref: true, summary: "A set of limitations, such as vision, speech, hearing, or touch, that are often temporary or situational, to pick from." },
+    "physical-context": { name: "Physical Context", ref: true, summary: "Examples of environments (home, car, bus, library, city center, outdoors) that enable or limit different abilities." },
+    "social-context": { name: "Social Context", ref: true, summary: "Examples of social settings (alone, with coworkers, in a crowd, with friends and family) and their different norms." },
+    "conditions": { name: "Conditions", ref: true, summary: "Environmental conditions (weather, temperature, time of day) that change situational limits." },
+    "role-tech": { name: "Role of Technology", ref: true, summary: "The core roles a digital product plays, used to check whether the technology fits the goal." }
+  };
+
+  /* The five routes, from the wireframes. steps: an item is {id, sub?, label?} or {choose: [...]}. more = cards after the listed steps. */
+  /* The cards that are not redesigned follow the original cards. Wording below is paraphrased, step for step. Check it against Microsoft's page and cite the source. */
+  var ORIG = {
+    "computer-trust": {
+      purpose: "To explore why people trust or distrust technology.",
+      steps: [
+        { t: "In any format that works for you, such as paper, a whiteboard, typing, or speaking aloud, put together a sentence about what you'd trust a computer to do and what you'd trust only a human to do, leaving a blank for each." },
+        { t: "Fill in the blanks as many times as you can in five minutes." },
+        { t: "Reflect on and discuss the results.", sub: ["Which answers stand out, and what shapes trust?", "How could technology behave differently to build more trust?"] }
+      ],
+      materials: "Note-taking supplies.",
+      tips: "Try interactions that range from purely transactional to very personal. Run it as a quick five-minute warm-up, or slow it down into a role-play the group acts out and discusses."
+    },
+    "persona-spectrum": {
+      purpose: "To map human abilities on a spectrum, so you can design solutions that benefit a wide range of people.",
+      steps: [
+        { t: "Interview one or more people who have a permanent limitation in at least one ability." },
+        { t: "Ask them what they enjoy doing and how they do it." },
+        { t: "Note the situations where they run into friction or limited access." },
+        { t: "Build a spectrum that shows how a similar limitation can be temporary or situational." }
+      ],
+      materials: "Persona Spectrum support card.",
+      tips: "The person's goal can be simple or significant. This works well as an introduction to inclusive design, and as a check-in during detailed design work."
+    },
+    "persona-network": {
+      purpose: "To look at design challenges through the web of relationships around one person.",
+      steps: [
+        { t: "Think of a specific person. List who they interact with every day, including who they depend on, trust, or enjoy spending time with." },
+        { t: "Map out that person and their key interactions with three to five people, including routine activities like planning dinner or commuting." },
+        { t: "List the mismatches between the person and their environment." }
+      ],
+      materials: "Note-taking supplies.",
+      tips: "There is no single right way to make the map, so use whatever format suits your process. Do this after you've learned about the person's challenges, supports, successes, and motivations."
+    },
+    "interaction-diary": {
+      purpose: "To observe people closely and spark ideas for inclusive design.",
+      steps: [
+        { t: "Choose a place where you can observe people interact, ideally somewhere you can stay and record your observations for a long stretch." },
+        { t: "Focus on small details, and notice both spoken and unspoken interactions." },
+        { t: "Record interactions between people and objects in any way that works for you, then repeat for people and technology." },
+        { t: "Reflect on what you observed to find mismatches in human-to-human and human-to-technology interactions. A mismatch is a moment when an interaction asks something of a person that doesn't fit what they can do in that situation. For examples, see {{examples-mismatch|Examples of Mismatch}}." }
+      ],
+      materials: "Examples of Mismatch support card.",
+      tips: "Observe how people move through the space, and notice emotional cues and body language. Think about whether their experiences seemed positive or negative."
+    },
+    "human-analogy": {
+      purpose: "To compare how your technology behaves with how a person in a similar role behaves.",
+      steps: [
+        { t: "Alone or in a group, spend three to five minutes naming a human counterpart to your technology, thinking in terms of job roles such as an assistant or a teacher." },
+        { t: "Set up interviews with people who do that work, and note what makes them effective." },
+        { t: "Brainstorm ways to build those insights into how your solution behaves." }
+      ],
+      materials: "Note-taking supplies.",
+      tips: "Compare two different analogies to see the nuances of each role. If you run this with a group, consider choosing the analogies in advance."
+    },
+    "mismatch-1": {
+      purpose: "To brainstorm improvements based on mismatched interactions.",
+      steps: [
+        { t: "From your research, list every mismatched interaction people experience." },
+        { t: "For each mismatch, frame a focused question about how to improve the experience, starting with phrases like “how might we”." },
+        { t: "Review the list of opportunities and pick the three you most want to explore." }
+      ],
+      materials: "Large paper, markers, and note-taking supplies.",
+      record: "Keep the opportunities you didn't choose, with a few words on why.",
+      tips: "Framing opportunities as questions keeps the brainstorm focused. Taking the mismatches one at a time keeps people from feeling overwhelmed."
+    },
+    "mismatch-2": {
+      purpose: "To generate design concepts inspired by mismatched interactions.",
+      steps: [
+        { t: "From the list you made in Mismatch To Solution I, choose the three opportunities that interest you most." },
+        { t: "Working on your own, brainstorm solutions to the first opportunity for three to five minutes, with one idea per sticky note." },
+        { t: "Repeat the brainstorm for your other two choices." },
+        { t: "If you're in a group, share your ideas and cluster similar ones, or filter them by what the team wants to work on." }
+      ],
+      materials: "Sticky notes and pens.",
+      record: "Note which ideas you aren't taking forward and why.",
+      tips: "Aim for many ideas before you cluster or filter. A one-minute warm-up, such as listing everything you associate with a simple word like “jump”, shows how much you can produce quickly."
+    },
+    "evaluate-tech": {
+      purpose: "To clarify the role technology plays in an interaction, so you can sharpen, simplify, and prioritize your designs.",
+      steps: [
+        { t: "Pick the design concept you like best, or use an existing prototype." },
+        { t: "Using the {{role-tech|Role of Technology card}}, list the role technology plays in your design." },
+        { t: "Decide whether the technology you chose is the simplest and most fitting way to reach your goal." }
+      ],
+      materials: "An existing concept or prototype, and note-taking supplies.",
+      record: "Note what you dropped and the reason.",
+      tips: "Use this to prioritize concepts before you start prototyping. Come back to it while you prototype and refine, to check that your solutions do what you intended."
+    },
+    "simulations": {
+      purpose: "To find ways to improve your solution by simulating temporary and situational limitations.",
+      steps: [
+        { t: "List the sequence of steps a user takes in your solution." },
+        { t: "Pick one limitation from the {{limits|Temporary/Situational Limit card}}." },
+        { t: "Recreate that limitation for yourself." },
+        { t: "Walk through the steps you listed in step 1." },
+        { t: "Note what could be improved." },
+        { t: "Adjust your design." },
+        { t: "Repeat with the other limitations on the card." }
+      ],
+      materials: "A prototype at any level of fidelity.",
+      record: "Note what you changed and why before you change it.",
+      tips: "Build low- to medium-fidelity prototypes. Think about the full range of the {{persona-spectrum-ref|Persona Spectrum}}, and what is appropriate physically, environmentally, and socially for the people involved."
+    },
+    "context-match": {
+      purpose: "To test whether your concept can adapt when a person's environment changes and their abilities shift with it.",
+      steps: [
+        { t: "Choose one context from the {{physical-context|Physical Context}} or {{social-context|Social Context}} cards." },
+        { t: "Choose one limitation from the {{limits|Temporary/Situational Limit card}}." },
+        { t: "Assess how well your solution adapts to that combination." },
+        { t: "List the changes you would make to help it adapt." },
+        { t: "Revise your scenario to show how the solution responds." },
+        { t: "Repeat with other combinations." }
+      ],
+      materials: "Conditions, Social Context, Physical Context, and Temporary/Situational Limit support cards.",
+      tips: "Set aside plenty of time, because this activity calls for careful thought. It is similar to Situational Adaptation, so if time is short, choose one of the two."
+    },
+    "situational": {
+      purpose: "To discover ways to adapt your solution to a variety of situational limitations.",
+      steps: [
+        { t: "Using the reference cards, choose:", sub: ["One example of a {{physical-context|physical context}}.", "One example of a {{social-context|social context}}.", "One example of a time of day, from the {{conditions|Conditions card}}."] },
+        { t: "Spend three to five minutes thinking about the three together, and list as many situational limitations of your product as you can." },
+        { t: "Think about how your solution could adapt to those limitations." },
+        { t: "Revise your solution so it adapts." },
+        { t: "Go back to step 2 and repeat with a different combination of physical, social, and time-of-day examples." }
+      ],
+      materials: "Note-taking supplies.",
+      tips: "Allow plenty of time to reflect. You can also use this on existing solutions to uncover where exclusion is built in."
+    }
+  };
+
+  var ROUTES = [
+    { id: "idea", color: "c-idea", title: "I Only Have An Idea",
+      desc: "You are new to this, or you have a rough idea or a problem in mind, but nothing is concrete yet.",
+      need: "An idea or a problem. For the diary, a place to observe people. For the persona spectrum, someone with a permanent limitation to interview.",
+      leave: "A list of places your idea may not fit some people, ready for brainstorming.",
+      people: "Optional (interview)",
+      steps: [
+        { id: "computer-trust", sub: "Optional" },
+        { choose: [{ id: "interaction-diary", sub: "Field Study" }, { id: "persona-spectrum", sub: "User Interview" }] },
+        { id: "persona-network" },
+        { id: "mismatch-1", also: "mismatch-2", label: "Mismatch To Solution I & II" }
+      ], rest: ["evaluate-tech", "design-micro", "lofi-prototype", "simulations", "context-match", "situational"], more: 6, start: "computer-trust" },
+    { id: "users", color: "c-users", title: "I Know My Users",
+      desc: "You know who you're designing for. You want to check who might be left out.",
+      need: "Your problem and a list of the people you're designing for, from research or a brief.",
+      leave: "A list of who might be left out, then solution ideas.",
+      people: "Not Needed",
+      steps: [
+        { id: "persona-spectrum-ref", sub: "Reference Card" },
+        { id: "mismatch-1", also: "mismatch-2", label: "Mismatch To Solution I & II" },
+        { id: "evaluate-tech" },
+        { id: "design-micro" },
+        { id: "lofi-prototype", sub: "Prototyping" }
+      ], rest: ["simulations", "context-match", "situational"], more: 3, start: "persona-spectrum-ref" },
+    { id: "brain", color: "c-brain", title: "I'm Ready To Brainstorm",
+      desc: "You know the problem and who it's for. Now you want ideas, and you wonder how your design can be inclusive.",
+      need: "Your problem, who it's for, and what success looks like.",
+      leave: "Ideas for your top three problems, and one interaction laid out in context.",
+      people: "Not Needed",
+      steps: [
+        { id: "examples-mismatch", sub: "Reference Card" },
+        { id: "mismatch-1", also: "mismatch-2", label: "Mismatch To Solution I & II" },
+        { id: "evaluate-tech" },
+        { id: "design-micro" },
+        { id: "lofi-prototype", sub: "Prototyping" }
+      ], rest: ["simulations", "context-match", "situational"], more: 3, start: "examples-mismatch" },
+    { id: "design", color: "c-design", title: "I Have A Design",
+      desc: "You have a design, concept, or interactive prototype. You want to check how well it works for people with different abilities.",
+      need: "A design, concept, or interactive prototype. For the testing step, a few people who can try it.",
+      leave: "One interaction laid out in its context, a check of how it holds up under different limitations, and a rough prototype tested with real users.",
+      people: "For Testing",
+      steps: [
+        { id: "design-micro" },
+        { id: "lofi-prototype", sub: "Prototyping" },
+        { id: "simulations" },
+        { id: "context-match" }
+      ], rest: ["situational"], more: 1, start: "design-micro" },
+    { id: "live", color: "c-live", title: "It's Already Live",
+      desc: "Your product is out in the world. But now you wonder if it leaves people out.",
+      need: "Your live product, or a description of how it works. No new research is needed to begin. Testing the prototype needs a few people.",
+      leave: "A list of situations where your product leaves people out, ideas to fix them, and a rough prototype of one fix.",
+      people: "For Testing",
+      steps: [
+        { id: "situational" },
+        { id: "mismatch-1", also: "mismatch-2", label: "Mismatch To Solution I & II" },
+        { id: "lofi-prototype", sub: "Prototyping" }
+      ], rest: [], more: 0, start: "situational" }
+  ];
+
+  var REDESIGNED = {
+    "design-micro": {
+      works: "Alone, as a reference, or as a team workshop.",
+      need: "A design, concept, or prototype.",
+      purpose: "A microinteraction is one small, single-purpose exchange between a person and a product, such as switching on a setting or confirming a payment. This activity aims to help you articulate each small detail in a sequence of interactions, in the context you're designing for, to find ways to make them more inclusive.",
+      steps: [
+        { t: "From an existing design, concept, or prototype, choose one specific interaction you want to improve." },
+        { t: "Describe all the specific contexts your interaction will happen in, with a few sentences for each: who is using it, where they are, what else is going on around them, and what they're trying to get done. The {{physical-context|Physical Context}}, {{social-context|Social Context}}, and {{conditions|Conditions}} cards can give you ideas." },
+        { t: "From the contexts you described, choose two or three to work through, including the one your users will meet most often and one you hadn't thought of before this activity. For each, lay out the exact steps a person takes, from start to finish, as if explaining them to someone who has never done it." },
+        { t: "Using your steps, compose a sequence of frames, or otherwise outline each of these:", sub: [
+          "Whether the user or the system starts the sequence.",
+          "How the user interacts with the trigger.",
+          "How the feedback begins.",
+          "How the user interacts with the feedback.",
+          "What happens right after the feedback ends."
+        ] }
+      ],
+      materials: "White board or large paper. Markers. Sticky notes.",
+      materialCards: ["physical-context", "social-context", "conditions"],
+      tips: "Start on your own: reflect on the microinteractions your users will face in the possible contexts and situations your product will be used in. Then use the examples to expand your thinking. You don't need to cover every context. Any you skip can become questions to check with real users. Mark anything you're guessing at. Those guesses are questions to check with people who actually use the product. If your group needs a warm-up to see how precise the steps have to be, try tying a shoe first: spell out the steps, then have a partner follow them exactly as described.",
+      record: "Note which concepts you didn't choose and why.",
+      changes: [
+        ["Step 1 accepts a design, concept, or prototype, and asks for one interaction", "Researcher's addition, so people arriving with different things can start"],
+        ["Steps 2 and 3: describe the contexts, then choose two or three and lay out the exact steps in each", "Interview insight (1 of 6)"],
+        ["Support cards added to Materials and step 2", "Researcher's addition. In the original these cards appear later, in Optimize."],
+        ["One-line definition of “microinteraction” in the Purpose", "Researcher's addition. The original never defines the term."],
+        ["Tying a shoe kept as an optional warm-up", "Researcher's choice. The interviewee suggested replacing it."],
+        ["“Mark anything you're guessing at”", "Researcher's addition, so the card doesn't just confirm what a team already believes"],
+        ["Tip to note concepts you didn't choose", "Interview insight (1 of 6), added to the cards where you choose something"]
+      ]
+    },
+    "lofi-prototype": {
+      works: "Steps 1 to 3 alone, as a reference. Testing needs other people.",
+      need: "Your microinteractions, or an existing prototype plus feedback from your team.",
+      purpose: "To refine a solution quickly and cheaply by building and testing rough versions with users, whether this is your first prototype or an update after feedback.",
+      steps: [
+        { t: "List the microinteractions in your design. If you've done Design A Microinteraction, start from that outline and update it. If you already have a prototype and feedback from your team, list the microinteractions that feedback touches.", who: "Can do alone" },
+        { t: "Choose a limitation from the {{limits|Temporary/Situational Limit card}}. For each microinteraction, note how it would work with that limitation and where it breaks. Repeat with another limitation.", who: "Can do alone" },
+        { t: "Choose one interaction to prototype or update, using what you found in step 2 and any feedback from your team.", who: "Can do alone" },
+        { t: "Using any materials that work for you, build or update a low-fidelity prototype that does all of these:", sub: [
+          "Covers each step of the interaction.",
+          "Can explain its own function without help.",
+          "Works under the limitation you explored in step 2."
+        ] },
+        { t: "Test the prototype with users and observe both delight and pain points.", who: "Needs other people" }
+      ],
+      materials: "Paper, stickers, clay, recycled materials, recorded sounds, video, or anything else that helps you make a rough demonstration of how your solution will work.",
+      materialCards: ["limits"],
+      tips: "The value is in observing what works and what doesn't. People can role-play the technology with a pre-agreed script. You don't have to do all five steps in one sitting. Step 2 is you working from your own assumptions. Step 5 is where real users check them.",
+      record: "Note which interactions you didn't prototype and why.",
+      changes: [
+        ["Step 2: apply ability limitations to each microinteraction before choosing one", "Interview insight (1 of 6). Uses the four limitations on the Temporary/Situational Limit card."],
+        ["Step 1 and Purpose: allow entry with an existing prototype plus team feedback", "Interview insight (1 of 6), on what “iterate” means in practice"],
+        ["Step 1: start from your Design A Microinteraction outline if you did it", "Researcher's addition. The original leaves the link unstated."],
+        ["Tip: steps can be done separately, and which need other people", "Interview insight (1 of 6), about wanting a reference rather than a one-sitting workshop"],
+        ["Step 4: prototype works under the limitation you explored", "Researcher's addition, so step 2 feeds the build"],
+        ["Tip to note interactions you didn't prototype", "Interview insight (1 of 6), added to the cards where you choose something"]
+      ]
+    }
+  };
+
+  /* ---------- helpers ---------- */
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    var kids = Array.prototype.slice.call(arguments, 2);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v === false || v == null) return;
+      if (k === "class") el.className = v;
+      else if (v === true) el.setAttribute(k, "");
+      else el.setAttribute(k, v);
+    });
+    (function add(list) {
+      list.forEach(function (k) {
+        if (k == null || k === false) return;
+        if (Array.isArray(k)) add(k);
+        else el.append(k.nodeType ? k : document.createTextNode(k));
+      });
+    })(kids);
+    return el;
+  }
+  function svg(inner, size, extra) {
+    var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("viewBox", "0 0 24 24");
+    s.setAttribute("width", size || 20);
+    s.setAttribute("height", size || 20);
+    s.setAttribute("aria-hidden", "true");
+    s.setAttribute("focusable", "false");
+    s.setAttribute("fill", "none");
+    s.setAttribute("stroke", "currentColor");
+    s.setAttribute("stroke-width", "2.4");
+    s.setAttribute("stroke-linecap", "round");
+    s.setAttribute("stroke-linejoin", "round");
+    if (extra) s.setAttribute("class", extra);
+    s.innerHTML = inner;
+    return s;
+  }
+  var ICON = {
+    plus:  '<path d="M12 5v14M5 12h14"/>',
+    minus: '<path d="M5 12h14"/>',
+    arrow: '<path d="M7 7l10 10M17 8v9H8"/>',
+    people: '<circle cx="8" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.5-5.6 5.5-5.6s5.5 2.3 5.5 5.6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c3.3-.5 6 1.4 6 5"/>',
+    smile: '<path d="M4 10c1.6 5.5 14.4 5.5 16 0"/><path d="M6 6.5v.1M18 6.5v.1"/>'
+  };
+  function box(cls) { return h("span", { class: "box", "aria-hidden": "true" }, svg(ICON.arrow, 20)); }
+
+  function stageIcon(key) {
+    var s = STAGES[key];
+    var span = h("span", { class: "stage-icon", "aria-hidden": "true" });
+    span.innerHTML = '<svg viewBox="0 0 16 16" focusable="false" fill="' + s.color + '">' + SHAPES[s.shape] + "</svg>";
+    return span;
+  }
+  function refIcon() {
+    var span = h("span", { class: "stage-icon", "aria-hidden": "true" });
+    span.innerHTML = '<svg viewBox="0 0 16 16" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="12" height="12" rx="2" stroke-dasharray="3 2"/></svg>';
+    return span;
+  }
+  function chip(id) {
+    var c = CARDS[id];
+    return h("a", { class: "chip" + (c.ref ? " ref" : ""), href: "#card-" + id }, c.ref ? refIcon() : stageIcon(c.stage), c.name, c.ref ? h("span", { class: "sr" }, " (reference card)") : null);
+  }
+
+  /* ---------- Home: route cards ---------- */
+  var routesEl = document.getElementById("routes");
+  var statusEl = document.getElementById("status");
+  var openId = null;
+  var items = {};
+
+  var curRoute = "";
+  function stepLink(s) {
+    var c = CARDS[s.id];
+    return h("a", { href: "#card-" + s.id + "--" + curRoute }, s.label || c.name);
+  }
+  function stepItem(s) {
+    if (s.choose) {
+      return h("li", null, h("span", { class: "choose-label" }, "Choose between:"),
+        h("ul", { class: "choose" }, s.choose.map(function (o) {
+          return h("li", null, stepLink(o), o.sub ? h("span", { class: "sub" }, o.sub) : null);
+        })));
+    }
+    return h("li", null, stepLink(s), s.sub ? h("span", { class: "sub" }, s.sub) : null);
+  }
+
+  function buildRoute(r) {
+    curRoute = r.id;
+    var pid = "panel-" + r.id, tid = "title-" + r.id, lid = "steps-" + r.id;
+    var toggle = h("button", { type: "button", class: "toggle", "aria-expanded": "false", "aria-controls": pid },
+      h("span", { class: "t-label" }, "Show Path Details"),
+      h("span", { class: "box", "aria-hidden": "true" }, svg(ICON.plus, 20, "i-plus"), svg(ICON.minus, 20, "i-minus")),
+      h("span", { class: "sr" }, " for " + r.title));
+    var details = h("dl", { class: "details" },
+      h("div", null, h("dt", null, "You'll Need"), h("dd", null, r.need)),
+      h("div", null, h("dt", null, "You'll Leave With"), h("dd", null, r.leave)),
+      h("div", null, h("dt", null, "Other People"), h("dd", null, h("span", { class: "people" }, svg(ICON.people, 24), r.people))));
+    var go = h("a", { class: "go", href: "#card-" + r.start + "--" + r.id },
+      "Start Your Path", h("span", { class: "sr" }, ", first step: " + CARDS[r.start].name), box());
+    var steps = h("div", { class: "steps" },
+      h("p", { class: "steps-label", id: lid }, "Start with these steps"),
+      h("ol", { class: "tl", "aria-labelledby": lid }, r.steps.map(stepItem)),
+      r.more ? h("p", { class: "more" }, "+ " + r.more + " More " + (r.more === 1 ? "Activity" : "Activities")) : null,
+      go);
+    var panel = h("div", { class: "panel", id: pid, hidden: true }, details, steps);
+    var li = h("li", { class: "rc " + r.color, id: "rc-" + r.id },
+      h("h2", { id: tid }, r.title),
+      h("p", { class: "rc-desc" }, r.desc),
+      panel, toggle);
+    items[r.id] = { li: li, toggle: toggle, panel: panel, label: toggle.querySelector(".t-label"), route: r };
+
+    toggle.addEventListener("click", function () { setOpen(openId === r.id ? null : r.id, true); });
+    li.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && openId === r.id) { setOpen(null, true); toggle.focus(); }
+    });
+    if (HOVER_OPEN && window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      var t = null;
+      li.addEventListener("mouseenter", function () { t = setTimeout(function () { if (openId !== r.id) setOpen(r.id, false); }, 250); });
+      li.addEventListener("mouseleave", function () { clearTimeout(t); });
+    }
+    routesEl.append(li);
+  }
+
+  /* As drawn in the wireframes, the open card takes its whole row, so the other cells in that row are hidden until it closes. Rows depend on the column count. */
+  var mqWide = window.matchMedia("(min-width: 60rem)"), mqMid = window.matchMedia("(min-width: 40rem)");
+  function applyRows() {
+    var cols = mqWide.matches ? 3 : (mqMid.matches ? 2 : 1);
+    var kids = Array.prototype.slice.call(routesEl.children);
+    var openLi = openId ? items[openId].li : null;
+    var row = openLi ? Math.floor(kids.indexOf(openLi) / cols) : -1;
+    kids.forEach(function (k, i) { k.hidden = !!openLi && k !== openLi && Math.floor(i / cols) === row; });
+  }
+  [mqWide, mqMid].forEach(function (m) { if (m.addEventListener) m.addEventListener("change", applyRows); });
+
+  /* Only one path is open at a time. */
+  function setOpen(id, announce) {
+    openId = id;
+    ROUTES.forEach(function (r) {
+      var it = items[r.id], on = (r.id === id);
+      it.li.classList.toggle("is-open", on);
+      it.toggle.setAttribute("aria-expanded", on ? "true" : "false");
+      it.panel.hidden = !on;
+      it.label.textContent = on ? "Hide Path Details" : "Show Path Details";
+    });
+    applyRows();
+    if (announce) {
+      statusEl.textContent = id ? "Path details for " + items[id].route.title + " are open. The other options in its row are hidden until you close it." : "Path details are closed.";
+    }
+    if (id) {
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      items[id].li.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+    }
+  }
+
+  /* ---------- Home: all cards ---------- */
+  function buildPick() {
+    var ul = document.getElementById("pick");
+    Object.keys(CARDS).forEach(function (id) {
+      var c = CARDS[id];
+      var li = h("li", { class: "pt" },
+        h("span", { class: "ph-img", "aria-hidden": "true" }),
+        h("div", { class: "name-row" },
+          h("span", { class: "ph-icon", "aria-hidden": "true" }),
+          h("h3", null, h("a", { href: "#card-" + id }, nameNode(c.name)))),
+        c.ref ? h("p", { class: "kind" }, "Reference Card") : null,
+        h("p", { class: "pt-sum" }, c.redesigned ? "Redesigned in this prototype." : c.summary),
+        h("span", { class: "pt-go", "aria-hidden": "true" }, c.ref ? "Read The Card" : "Start Activity", box()));
+      ul.append(li);
+    });
+  }
+
+  /* ---------- Card page ---------- */
+  /* Per-card facts. refs = reference cards the card suggests. Microsoft's page names refs for most activity cards. For Design A Microinteraction, Low-Fidelity Prototype and Situational Adaptation they come from our design decisions. time and people are shown only where known. */
+  var META = {
+    /* Times and groups marked "est." are the researcher's estimates, not Microsoft's. Change them as you learn more. */
+    /* Reference cards show a time but no group. All of these times are estimates. */
+    "examples-mismatch": { time: "10min - 20min" }, /* est. */
+    "conditions": { time: "10min - 20min" }, /* est. */
+    "persona-spectrum-ref": { time: "15min - 30min" }, /* est. */
+    "physical-context": { time: "10min - 20min" }, /* est. */
+    "social-context": { time: "10min - 20min" }, /* est. */
+    "role-tech": { time: "10min - 20min" }, /* est. */
+    "limits": { time: "5min - 10min" }, /* est. */
+    "computer-trust":   { time: "5min", people: "Group", refs: [] },
+    "persona-spectrum": { time: "30min - 60min", people: "Interview Needed", refs: ["persona-spectrum-ref"] }, /* est. time */
+    "persona-network":  { time: "15min - 30min", people: "Solo Or Group", refs: ["social-context"] }, /* est. */
+    "interaction-diary":{ time: "30min - 60min", people: "Works Solo", refs: ["examples-mismatch"] }, /* est. time */
+    "human-analogy":    { time: "3min - 5min", people: "Solo Or Group, Plus Interviews", refs: [] },
+    "mismatch-1":       { time: "15min - 30min", people: "Solo Or Group", refs: ["examples-mismatch"] }, /* est. */
+    "mismatch-2":       { time: "3min - 5min", people: "Solo, Then Group", refs: ["examples-mismatch"] },
+    "design-micro":     { time: "30min - 45min", people: "Solo Or Group", refs: ["physical-context", "social-context", "conditions"] }, /* est. time */
+    "evaluate-tech":    { time: "15min - 30min", people: "Solo Or Group", refs: ["examples-mismatch", "role-tech"] }, /* est. */
+    "lofi-prototype":   { time: "45min - 90min", people: "Testing Needs Others", refs: ["limits"] }, /* est. time */
+    "simulations":      { time: "15min - 30min", people: "Works Solo", refs: ["limits"] }, /* est. time */
+    "context-match":    { time: "30min - 60min", people: "Solo Or Group", refs: ["physical-context", "social-context", "conditions", "limits"] }, /* est. */
+    "situational":      { time: "3min - 5min", people: "Solo Or Group", refs: ["physical-context", "social-context", "conditions", "limits", "examples-mismatch"] } /* est. group */
+  };
+
+  var ARROW_L = '<path d="M20 12H5M11 6l-6 6 6 6"/>';
+  var ARROW_UR = '<path d="M7 17L17 7M8 7h9v9"/>';
+  var ARROW_R = '<path d="M5 12h14M13 6l6 6-6 6"/>';
+  var LONG = '<svg viewBox="0 0 190 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="none"><path d="M3 12h182M172 3l13 9-13 9"/></svg>';
+
+  function phIcon() { return h("span", { class: "ph-icon", "aria-hidden": "true" }); }
+  /* A name with a slash (Temporary/Situational Limit) may wrap after the slash instead of spilling out of its box. */
+  function nameNode(name) {
+    var out = [];
+    name.split("/").forEach(function (part, i, all) {
+      out.push(part + (i < all.length - 1 ? "/" : ""));
+      if (i < all.length - 1) out.push(document.createElement("wbr"));
+    });
+    return out;
+  }
+
+  /* "Choose a limitation from the {{limits|Temporary/Situational Limit card}}." turns into a link. */
+  function richText(t, routeId) {
+    var out = [], re = /\{\{([a-z0-9-]+)\|([^}]+)\}\}/g, last = 0, m;
+    while ((m = re.exec(t))) {
+      if (m.index > last) out.push(t.slice(last, m.index));
+      if (CARDS[m[1]] && CARDS[m[1]].ref) out.push(h("a", { href: absHash(m[1]), target: "_blank", rel: "noopener" }, m[2], h("span", { class: "sr" }, " (opens in a new tab)")));
+      else out.push(h("a", { href: hashFor(m[1], routeId) }, m[2]));
+      last = re.lastIndex;
+    }
+    if (last < t.length) out.push(t.slice(last));
+    return out;
+  }
+  /* Reference cards open in a new tab so the person keeps their place in the activity. The new tab starts on that card with no path. */
+  function absHash(id) { return (/^(https?|file):/.test(location.href) ? location.href.split("#")[0] : "") + "#card-" + id; }
+  function hashFor(id, routeId) { return "#card-" + id + (routeId ? "--" + routeId : ""); }
+
+  /* The rest of the path after this card. Mismatch To Solution I and II count as one step in the route, but on card I the next stop is II. */
+  function remainingOnPath(cardId, routeId) {
+    var r = ROUTES.filter(function (x) { return x.id === routeId; })[0];
+    if (!r) return null;
+    var steps = r.steps.concat(r.rest.map(function (i) { return { id: i }; }));
+    var pos = -1;
+    steps.forEach(function (st, i) {
+      if (pos > -1) return;
+      if (st.id === cardId || st.also === cardId) pos = i;
+      if (st.choose && st.choose.some(function (o) { return o.id === cardId; })) pos = i;
+    });
+    if (pos < 0) return null;
+    var items = [];
+    if (steps[pos].also && steps[pos].id === cardId) items.push({ id: steps[pos].also });
+    steps.slice(pos + 1).forEach(function (st) {
+      if (st.choose) st.choose.forEach(function (o) { items.push({ id: o.id, sub: o.sub, choose: true }); });
+      else items.push({ id: st.id, label: st.label });
+    });
+    return items;
+  }
+
+  function reference(c) {
+    return h("div", { class: "blk" }, h("h2", null, "Reference Card"), h("p", null, c.summary));
+  }
+
+  function refButtons(ids, routeId) {
+    return h("div", { class: "refs" }, ids.map(function (rid) {
+      return h("a", { class: "refbtn", href: absHash(rid), target: "_blank", rel: "noopener" }, phIcon(), nameNode(CARDS[rid].name), h("span", { class: "sr" }, " (reference card, opens in a new tab)"),
+        h("span", { class: "circ", "aria-hidden": "true" }, svg(ARROW_UR, 20)));
+    }));
+  }
+
+  function renderCard(id, routeId) {
+    var c = CARDS[id], meta = META[id] || {};
+    pathCheck = null;
+    var host = document.getElementById("card");
+    host.replaceChildren();
+
+    var ret = h("button", { type: "button", class: "return" }, svg(ARROW_L, 30), "Return", h("span", { class: "sr" }, " to the previous page"));
+    ret.addEventListener("click", goBack);
+
+    var top = h("div", { class: "cp-top" },
+      h("p", { class: "group" }, phIcon(), c.ref ? "Reference Card" : STAGES[c.stage].label),
+      h("h1", { id: "card-title", tabindex: "-1" }, nameNode(c.name)));
+    if (!c.ref) {
+      top.append(h("p", { class: "meta" },
+        h("span", null, "Activity"),
+        h("span", null, meta.time || "Time Not Stated"),
+        h("span", null, phIcon(), h("span", { class: "sr" }, "Other people: "), meta.people || "Not Stated")));
+    } else {
+      /* Reference cards show the kind and a time, with no group item */
+      top.append(h("p", { class: "meta" },
+        h("span", null, "Reference Card"),
+        h("span", null, meta.time || "Time Not Stated")));
+    }
+
+    /* DOM order = reading order on a phone: Purpose, You Will Need, then Materials and Tips, then Instructions. On a wide screen, Materials and Tips sit in the right column. */
+    var left = h("div", { class: "left" }), right = h("div", { class: "right" }), bottom = h("div", { class: "bottom" });
+    var cols = h("div", { class: "cols" }, left, right, bottom);
+
+    if (REFS[id]) {
+      var rc = REFS[id];
+      left.append(h("div", { class: "blk" }, h("h2", null, "Purpose"), h("p", null, rc.purpose || c.summary)));
+      left.append(h("div", { class: "blk" }, h("h2", null, "You Will Need"), h("p", null, rc.need)));
+      right.append(h("div", { class: "blk" }, h("h2", null, "Materials"), h("p", null, "Note-taking supplies.")));
+      bottom.append(h("div", { class: "blk" }, h("h2", null, "A Starting Point, Not A Full List"), h("p", null, REF_START)));
+    } else if (c.ref) {
+      left.append(h("div", { class: "blk" }, h("h2", null, "What it is"), h("p", null, c.summary)));
+      left.append(h("p", { class: "notice" }, "This reference card isn't redesigned in the prototype yet. Read the original on ",
+        h("a", { href: ORIGINAL, target: "_blank", rel: "noopener" }, "Microsoft's page"), " (opens in a new tab)."));
+    } else {
+      var d = REDESIGNED[id] || ORIG[id];
+      left.append(h("div", { class: "blk" }, h("h2", null, "Purpose"), h("p", null, d.purpose)));
+      /* No "You Will Need" section when the card needs nothing */
+      var needText = d.need || c.need;
+      if (needText) left.append(h("div", { class: "blk" }, h("h2", null, "You Will Need"), h("p", null, needText)));
+      var ol = h("ol", { class: "steps-ol" });
+      d.steps.forEach(function (st) {
+        var li = h("li", null, richText(st.t, routeId));
+        if (st.sub) li.append(h("ul", null, st.sub.map(function (x) { return h("li", null, richText(x, routeId)); })));
+        ol.append(li);
+      });
+      var ins = h("div", { class: "blk" }, h("h2", null, "Instructions"), ol);
+      if (d.record) ins.append(h("p", { class: "record" }, h("strong", null, "Keep A Record"), d.record + " Capture it now, while you still remember the options."));
+      bottom.append(ins);
+      var hasRefs = meta.refs && meta.refs.length;
+      if (d.materials || hasRefs) {
+        right.append(h("div", { class: "blk" }, h("h2", null, "Materials"), d.materials ? h("p", null, d.materials) : null, hasRefs ? refButtons(meta.refs, routeId) : null));
+      }
+      if (d.tips) right.append(h("div", { class: "tips" }, h("h2", null, "Tips"), h("p", null, richText(d.tips, routeId))));
+    }
+
+    host.append(ret, top, cols);
+    mmCheck = null;
+    if (REFS[id]) host.append(buildRef(id, !!(routeId && remainingOnPath(id, routeId))));
+    if (ORIG[id]) host.append(h("p", { class: "source" }, "Based on the original activity in Microsoft's Inclusive Activity Cards. ", h("a", { href: ORIGINAL, target: "_blank", rel: "noopener" }, "Read the original"), " (opens in a new tab)."));
+
+    /* Continue With This Path: only when the person came in through a path */
+    var rest = routeId ? remainingOnPath(id, routeId) : null;
+    if (rest) host.append(buildPath(rest, routeId));
+  }
+
+  /* ---------- Reference cards: example rows plus a selectable list of extras ---------- */
+  /* All wording below is the researcher's own (not Microsoft's), except text that came from the Figma templates. Edit freely.
+     layout: "pictures" (three headings with a picture), "side" (heading with example cards at the right), "spectrum" (same, with Permanent / Temporary / Situational columns), "strip" (one row of example cards).
+     step2.items are the extra examples people can select. g points to a group (for the screen-reader label). */
+  var REF_START = "These examples are here to prompt your thinking. People and situations vary more than any list can cover. Talk to real people to find out what's missing.";
+  var REF_NOTE = "These examples are a starting point, not every way a design can leave someone out.";
+  var STEP_END = " Record them in any way that works for you. There are no wrong answers, and you can add more later.";
+  function pickItems(list, g) { return list.map(function (t) { return g == null ? { t: t } : { t: t, g: g }; }); }
+  var REFS = {
+    "examples-mismatch": {
+      layout: "pictures", exLabel: "Examples of Mismatch",
+      need: "What you already have in mind of what you imagine possible mismatches can happen, and an open mind for other possible scenarios.",
+      groups: [{ name: "Human & Human", alt: "Human and Human" }, { name: "Human & Environment", alt: "Human and Environment" }, { name: "Human & Object", alt: "Human and Object" }],
+      step1: { title: "What Are The Mismatches In Your Design?", text: "List the mismatches people might run into with your design." + STEP_END },
+      step2: {
+        title: "Do You Consider The Following Mismatches Too?",
+        text: "Go through the examples below. Select any that could apply to your design to add them to your new list. You can change your list at any time.",
+        legend: "Mismatch examples. Select any that could apply to your design.", listTitle: "Your New Mismatches List",
+        items: pickItems(["Different Languages", "Fast, Unclear Speech", "Jargon And Slang", "Unspoken Social Cues", "Everyone Talking At Once", "Different Reading Levels"], 0)
+          .concat(pickItems(["Stairs With No Ramp", "Loud, Crowded Room", "Dim Lighting", "Glare On A Screen", "Narrow Doorways", "Slow Internet Connection", "Long Distances Between Places"], 1))
+          .concat(pickItems(["Tiny Buttons", "Touch-Only Controls", "Hard-To-Open Jar Lids", "Hard-To-Read Small Text", "Sound-Only Alerts", "Two-Handed Devices", "Short Time Limits", "Color-Only Status Signals"], 2))
+      }
+    },
+    "conditions": {
+      layout: "side", exLabel: "Examples of Conditions",
+      purpose: "Different environmental conditions can change our situational limitations.",
+      need: "Any conditions you already imagine people might be in when using your design, and an open mind for other possible scenarios.",
+      groups: [
+        { name: "Weather", cards: ["Sunny", "Windy", "Rain", "Snowy"] },
+        { name: "Temperature", cards: ["Hot", "Warm", "Cool", "Freezing"] },
+        { name: "Time Of The Day", cards: ["Day", "Noon", "Night", "Sunrise"] },
+        { name: "Sound", cards: ["Loud", "Quiet", "Ambient"] }
+      ],
+      step1: { title: "What Are The Conditions Your Design Will Be Used In?", text: "List the conditions people might be in when using your design." + STEP_END },
+      step2: {
+        title: "Do You Consider The Following Conditions Too?",
+        text: "Go through the conditions below. Select any that your design might be used in to add them to your new list. Think about conditions you haven't considered yet.",
+        legend: "Condition examples. Select any that your design might be used in.", listTitle: "Your New Conditions List",
+        items: pickItems(["Foggy", "Humid", "Thunderstorm", "Heat Wave", "Icy Ground", "Strong Sunlight", "Dim Indoor Light", "Flickering Light", "Dusk", "Midnight", "Early Morning", "Echoing Room", "Construction Noise", "Music Playing", "Crowd Noise", "Smoky Air"])
+      }
+    },
+    "persona-spectrum-ref": {
+      layout: "spectrum", exLabel: "Examples of Persona Spectrum", cols: ["Permanent", "Temporary", "Situational"],
+      purpose: "We use a Persona Spectrum to understand related limitations across a spectrum of permanent, temporary, and situational disabilities. It's a quick tool to help foster empathy and to show how a solution can scale to a broader audience.",
+      need: "A limitation or ability you want to explore, and an open mind for other possible situations.",
+      groups: [
+        { name: "Touch", cards: ["One Arm", "Arm Injury", "New Parent"] },
+        { name: "See", cards: ["Blind", "Cataract", "Distracted Driver"] },
+        { name: "Hear", cards: ["Deaf", "Ear Infection", "Bartender"] },
+        { name: "Speak", cards: ["Non-Verbal", "Laryngitis", "Heavy Accent"] }
+      ],
+      step1: { title: "How Might The Persona Spectrum Affect People Using Your Design?", text: "Pick one limitation that matters for your design and list how it could be permanent, temporary, and situational." + STEP_END },
+      step2: {
+        title: "Do You Consider The Following Situations Too?",
+        text: "Go through the situations below. Select any that people using your design might face to add them to your new list. Think about situations you haven't considered yet.",
+        legend: "Situation examples. Select any that people using your design might face.", listTitle: "Your New Situations List",
+        items: pickItems(["Wearing Gloves", "Carrying Groceries", "Holding A Coffee Cup", "Wet Hands", "Bright Sunlight On A Screen", "Loud Concert", "Learning The Language", "Tired After A Night Shift", "Stress Or Panic", "Temporary Brain Injury", "Mentally Overloaded", "Interrupted Every Few Minutes"])
+      }
+    },
+    "physical-context": {
+      layout: "strip", exLabel: "Few Examples For Inspiration",
+      purpose: "Different environments enable different capabilities, present different limitations, and have different rules and social norms.",
+      need: "Any physical contexts you already imagine your design might be used in, and an open mind for other possible scenarios.",
+      strip: ["At Home", "In The Wilderness", "In A Library", "In A Car", "In The City Center", "On The Bus"],
+      step1: { title: "What Are The Physical Contexts Your Design Will Be Used In?", text: "List the physical contexts you imagine your design will be used in." + STEP_END },
+      step2: {
+        title: "Do You Consider The Following Contexts Too?",
+        text: "Go through the contexts below. Select any that your design might be used in to add them to your new list. Think about places you haven't considered yet.",
+        legend: "Physical context examples. Select any that your design might be used in.", listTitle: "Your New Contexts List",
+        items: pickItems(["At Work", "In A Classroom", "In A Hospital", "At The Airport", "In A Train Station", "At A Grocery Store", "In A Restaurant", "At The Gym", "In An Elevator", "On A Sidewalk", "In A Parking Lot", "At A Concert", "On A Plane", "In A Public Restroom", "In A Park", "In A Stairwell"])
+      }
+    },
+    "social-context": {
+      layout: "strip", exLabel: "Few Examples For Inspiration",
+      purpose: "Different social contexts come with different rules, behaviors, and social norms.",
+      need: "Any social contexts you already imagine your design might be used in, and an open mind for other possible scenarios.",
+      strip: ["Alone", "With Coworkers", "In A Crowd", "With Friends", "With Family"],
+      step1: { title: "What Are The Social Contexts Your Design Will Be Used In?", text: "List the social contexts you imagine your design will be used in." + STEP_END },
+      step2: {
+        title: "Do You Consider The Following Social Contexts Too?",
+        text: "Go through the contexts below. Select any that your design might be used in to add them to your new list. Think about social settings you haven't considered yet.",
+        legend: "Social context examples. Select any that your design might be used in.", listTitle: "Your New Social Contexts List",
+        items: pickItems(["In A Virtual Meeting", "In An Online Community", "In A Classroom", "In A Loose Crowd", "In A Packed Crowd", "With A Stranger", "With A Customer", "With Your Manager", "At A Party", "In A Quiet Shared Space", "With Children", "In A Public Meeting", "While Others Are Waiting"])
+      }
+    },
+    "role-tech": {
+      layout: "strip", exLabel: "Few Examples For Inspiration",
+      purpose: "Most digital products have one or two roles that are at the core of their functionality.",
+      need: "Any roles you already imagine your design plays for people, and an open mind for other possible scenarios.",
+      strip: ["Collect & Summarize", "Translate", "Transport", "Listen"],
+      step1: { title: "What Roles Does Technology Play In Your Design?", text: "List the roles technology plays in your design." + STEP_END },
+      step2: {
+        title: "Do You Consider The Following Roles Too?",
+        text: "Go through the roles below. Select any that your design might play to add them to your new list. Think about roles you haven't considered yet.",
+        legend: "Role examples. Select any that your design might play.", listTitle: "Your New Roles List",
+        items: pickItems(["Teach", "Recommend", "Remind", "Monitor", "Connect People", "Entertain", "Guide", "Search", "Coach", "Schedule", "Pay", "Create", "Alert", "Predict", "Store", "Build Community", "Play A Game", "Collaborate", "Watch Media"])
+      }
+    },
+    "limits": {
+      layout: "strip", exLabel: "Temporary/Situational Limits",
+      purpose: "Disabilities are often temporary or situational. Use this card to pick which limitations apply to your scenario.",
+      need: "Your design scenarios, or a short description of how people use your design.",
+      strip: ["Can't Speak", "Can't Hear", "Can't See", "Can't Touch"],
+      step1: { title: "How Might Temporary Or Situational Limits Affect How People Use Your Design?", text: "Pick the limits that could apply to your design and list how each could affect the way people use it." + STEP_END }
+    }
+  };
+  var CHECK = '<path d="M5 12.5l4.5 4.5L19 7.5"/>';
+  var XMARK = '<path d="M6 6l12 12M18 6L6 18"/>';
+  /* Each card's list is kept while the page is open, so it is still there when you come back. */
+  var picks = {};
+  var mmCheck = null;
+
+  function exCard(label, type) {
+    return h("li", { class: "ex-card" },
+      h("span", { class: "mm-tile", "aria-hidden": "true" }),
+      h("span", { class: "mm-name" }, label, type ? h("span", { class: "sr" }, " (" + type + ")") : null),
+      type ? h("small", { class: "ex-type", "aria-hidden": "true" }, type) : null);
+  }
+
+  function buildRef(id, hasPath) {
+    var cfg = REFS[id], s2 = cfg.step2;
+    var arr = picks[id] || (picks[id] = []);
+    var boxes = {};
+    var items = s2 ? s2.items : [];
+    var listH = s2 ? h("h3", { class: "mm-list-h", id: "mm-list-h", tabindex: "-1" }, s2.listTitle) : null;
+    var picked = h("ul", { class: "mm-picked", "aria-labelledby": "mm-list-h" });
+    var empty = h("p", { class: "mm-empty" }, "Nothing here yet. Select an example above to add it.");
+
+    function say(msg) { statusEl.textContent = msg; }
+    function count() { return arr.length === 1 ? "1 item in your list." : arr.length + " items in your list."; }
+    function renderPicked() {
+      picked.replaceChildren();
+      arr.forEach(function (i) {
+        var b = h("button", { type: "button", class: "mm-chip", "data-i": i },
+          h("span", { class: "mm-tile", "aria-hidden": "true" }),
+          h("span", { class: "mm-name" }, items[i].t),
+          h("span", { class: "mm-x", "aria-hidden": "true" }, svg(XMARK, 16)),
+          h("span", { class: "sr" }, ". Remove from your list"));
+        b.addEventListener("click", function () { remove(i); });
+        picked.append(h("li", null, b));
+      });
+      picked.hidden = !arr.length;
+      empty.hidden = !!arr.length;
+    }
+    function remove(i) {
+      var pos = arr.indexOf(i);
+      if (pos < 0) return;
+      arr.splice(pos, 1);
+      if (boxes[i]) boxes[i].checked = false;
+      renderPicked();
+      say("Removed " + items[i].t + ". " + count());
+      var next = arr.length ? picked.querySelector('[data-i="' + arr[Math.min(pos, arr.length - 1)] + '"]') : null;
+      (next || listH).focus();
+    }
+
+    /* 1. The examples */
+    var exBody;
+    if (cfg.layout === "pictures") {
+      exBody = h("ul", { class: "mm-rows" }, cfg.groups.map(function (g) {
+        return h("li", { class: "mm-row" }, h("h3", null, g.name), h("span", { class: "mm-img", "aria-hidden": "true" }));
+      }));
+    } else if (cfg.layout === "strip") {
+      exBody = h("div", { class: "ex-strip" }, h("ul", { class: "ex-cards" }, cfg.strip.map(function (l) { return exCard(l); })));
+    } else {
+      var head = cfg.cols ? h("div", { class: "ex-head", "aria-hidden": "true" }, h("span"), h("div", { class: "ex-th-row" }, cfg.cols.map(function (c) { return h("span", { class: "ex-th" }, c); }))) : null;
+      exBody = h("div", { class: "ex-box" }, head,
+        h("ul", { class: "ex-rows" }, cfg.groups.map(function (g) {
+          return h("li", { class: "ex-row" }, h("h3", null, g.name),
+            h("ul", { class: "ex-cards" }, g.cards.map(function (l, i) { return exCard(l, cfg.cols ? cfg.cols[i] : null); })));
+        })));
+    }
+
+    /* 2. Now Your Turn */
+    var steps = [h("div", { class: "mm-step has-img" },
+      h("span", { class: "mm-pill" }, "Step 1"),
+      h("div", { class: "mm-st" }, h("h3", null, cfg.step1.title), h("p", null, cfg.step1.text)),
+      h("span", { class: "mm-img", "aria-hidden": "true" }))];
+    var turn = [h("h2", { class: "sec-label", id: "mm-turn" }, "Now Your Turn")];
+    var after = [];
+    if (s2) {
+      steps.push(h("div", { class: "mm-step" },
+        h("span", { class: "mm-pill" }, "Step 2"),
+        h("div", { class: "mm-st" }, h("h3", null, s2.title), h("p", null, s2.text))));
+
+      var cards = h("ul", { class: "mm-cards" }, items.map(function (it, i) {
+        var cb = h("input", { type: "checkbox" });
+        cb.checked = arr.indexOf(i) > -1;
+        boxes[i] = cb;
+        cb.addEventListener("change", function () {
+          var pos = arr.indexOf(i);
+          if (cb.checked && pos < 0) arr.push(i);
+          if (!cb.checked && pos > -1) arr.splice(pos, 1);
+          renderPicked();
+          say((cb.checked ? "Added " : "Removed ") + it.t + ". " + count());
+        });
+        var alt = it.g != null && cfg.groups && cfg.groups[it.g] ? cfg.groups[it.g].alt : null;
+        return h("li", null, h("label", { class: "mm" }, cb,
+          h("span", { class: "mm-card" },
+            h("span", { class: "mm-tile", "aria-hidden": "true" }),
+            h("span", { class: "mm-name" }, it.t, alt ? h("span", { class: "sr" }, " (" + alt + ")") : null),
+            h("span", { class: "mm-check", "aria-hidden": "true" }, svg(CHECK, 18)))));
+      }));
+      var scroller = h("div", { class: "mm-scroll" }, cards);
+      var hint = h("button", { type: "button", class: "scroll-hint" }, "Scroll For More Cards");
+      hint.insertAdjacentHTML("beforeend", LONG);
+      hint.hidden = true;
+      hint.addEventListener("click", function () {
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        scroller.scrollBy({ left: Math.max(scroller.clientWidth * 0.8, 120), behavior: reduce ? "auto" : "smooth" });
+      });
+      mmCheck = function () { hint.hidden = !(scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 24); };
+      scroller.addEventListener("scroll", mmCheck, { passive: true });
+      var fs = h("fieldset", { class: "mm-fs" }, h("legend", { class: "sr" }, s2.legend), h("div", { class: "mm-hint-row" }, hint), scroller);
+      renderPicked();
+      after = [h("p", { class: "mm-note" }, REF_NOTE), fs, h("div", { class: "mm-list" }, listH, picked, empty)];
+    }
+
+    return h("div", { class: "mm-main" },
+      h("section", { class: "mm-sec", "aria-labelledby": "mm-ex" }, h("h2", { class: "sec-label", id: "mm-ex" }, cfg.exLabel), exBody),
+      h("section", { class: "mm-sec" + (s2 && hasPath ? " mm-end" : ""), "aria-labelledby": "mm-turn" },
+        turn, h("div", { class: "mm-steps" }, steps), after));
+  }
+
+  function changeLink() {
+    return h("a", { class: "change", href: "#" }, "Things Changed? Choose a Different Path", h("span", { class: "circ", "aria-hidden": "true" }, svg(ARROW_R, 18)));
+  }
+  function buildPath(rest, routeId) {
+    /* Last activity on the path: no "Continue With This Path" block, only the way back to the main page */
+    if (!rest.length) return h("div", { class: "path" }, changeLink());
+    var panel = h("div", { class: "path-panel" },
+      h("h2", { id: "path-h" }, "Continue With This Path"),
+      h("p", null, "You don't have to finish the list. Your project may change as you go, so feel free to explore other activities."));
+    var list = h("ul", { class: "path-cards" }, rest.map(function (it) {
+      var c = CARDS[it.id];
+      return h("li", null, h("a", { class: "pc", href: hashFor(it.id, routeId) },
+        h("span", { class: "tile", "aria-hidden": "true" }),
+        h("span", null, it.label || nameNode(c.name), it.sub ? h("small", null, it.sub) : null),
+        it.choose ? h("span", { class: "sr" }, " (choose one of the two activities listed together)") : null));
+    }));
+    var scroller = h("div", { class: "path-scroll" }, panel, rest.length ? list : null);
+    var hint = h("button", { type: "button", class: "scroll-hint" }, "Scroll For More Activities");
+    hint.insertAdjacentHTML("beforeend", LONG);
+    hint.hidden = true;
+    var change = changeLink();
+    var sec = h("section", { class: "path", "aria-labelledby": "path-h" }, hint, scroller, change);
+
+    function check() {
+      var wide = window.matchMedia("(min-width: 48rem)").matches;
+      var el = wide ? scroller : list;
+      hint.hidden = !(rest.length && el.scrollLeft + el.clientWidth < el.scrollWidth - 24);
+    }
+    function target() { return window.matchMedia("(min-width: 48rem)").matches ? scroller : list; }
+    hint.addEventListener("click", function () {
+      var el = target(), reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var visible = el.clientWidth - (el === scroller ? panel.offsetWidth : 0);
+      el.scrollBy({ left: Math.max(visible * 0.8, 120), behavior: reduce ? "auto" : "smooth" });
+    });
+    scroller.addEventListener("scroll", check, { passive: true });
+    list.addEventListener("scroll", check, { passive: true });
+    pathCheck = check;
+    return sec;
+  }
+  var pathCheck = null;
+
+  /* Return goes to the previous page in the app. With no earlier page it goes to the main page. */
+  var stack = [location.hash];
+  function goBack() {
+    if (stack.length > 1) history.back();
+    else location.hash = "";
+  }
+
+  var home = document.getElementById("home");
+  var cardView = document.getElementById("card");
+
+  function route(fromEvent) {
+    var m = /^#card-([a-z0-9]+(?:-[a-z0-9]+)*?)(?:--([a-z]+))?$/.exec(location.hash);
+    if (m && CARDS[m[1]]) {
+      renderCard(m[1], m[2] || "");
+      home.hidden = true; cardView.hidden = false;
+      document.body.classList.add("on-card");
+      window.scrollTo(0, 0);
+      document.getElementById("card-title").focus();
+      document.title = CARDS[m[1]].name + " | Inclusive Cards Router";
+      if (pathCheck) pathCheck();
+      if (mmCheck) mmCheck();
+    } else {
+      cardView.hidden = true; home.hidden = false;
+      document.body.classList.remove("on-card");
+      document.title = "Inclusive Cards Router";
+      if (fromEvent) {
+        window.scrollTo(0, 0);
+        document.getElementById("home-title").focus();
+      }
+    }
+  }
+  window.addEventListener("resize", function () { if (pathCheck && !cardView.hidden) pathCheck(); if (mmCheck && !cardView.hidden) mmCheck(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-smile]"), function (n) { n.append(svg(ICON.smile, 18)); });
+  ROUTES.forEach(buildRoute);
+  buildPick();
+  window.addEventListener("hashchange", function () {
+    var h2 = location.hash;
+    if (stack.length >= 2 && stack[stack.length - 2] === h2) stack.pop(); else stack.push(h2);
+    route(true);
+  });
+  route(false);
+})();
+</script>
+
+
+</body></html>
