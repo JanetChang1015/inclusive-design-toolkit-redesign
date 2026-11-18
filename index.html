@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Inclusive Cards Router</title>
+<title>Inclusive Design Pathfinder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Caveat+Brush&display=swap">
@@ -14,10 +14,10 @@
   --line: #6b6b6b;
   --rule: #cfc8b4;
   --c-idea: #fdf6a7;
-  --c-users: #ffd0da;
+  --c-users: #ffd0d9;
   --c-brain: #c0fdaf;
-  --c-design: #ffd596;
-  --c-live: #a0fcfc;
+  --c-design: #ffd698;
+  --c-live: #a2fdff;
   --btn-bg: #000000;
   --btn-fg: #ffffff;
   --go-bg: #6b6b6b;
@@ -50,11 +50,11 @@
     --on-color-muted: #d9d4c6;
     --line: #8d897d;
     --rule: #3d3a30;
-    --c-idea: #4a4720;
-    --c-users: #4f2b35;
-    --c-brain: #2b4a29;
-    --c-design: #4f3b1c;
-    --c-live: #1d4a4a;
+    --c-idea: #fdf6a7;
+    --c-users: #ffd0d9;
+    --c-brain: #c0fdaf;
+    --c-design: #ffd698;
+    --c-live: #a2fdff;
     --btn-bg: #f6f2e7;
     --btn-fg: #111111;
     --go-bg: #b3ae9e;
@@ -85,11 +85,11 @@
   --on-color-muted: #d9d4c6;
   --line: #8d897d;
   --rule: #3d3a30;
-  --c-idea: #4a4720;
-  --c-users: #4f2b35;
-  --c-brain: #2b4a29;
-  --c-design: #4f3b1c;
-  --c-live: #1d4a4a;
+  --c-idea: #fdf6a7;
+  --c-users: #ffd0d9;
+  --c-brain: #c0fdaf;
+  --c-design: #ffd698;
+  --c-live: #a2fdff;
   --btn-bg: #f6f2e7;
   --btn-fg: #111111;
   --go-bg: #b3ae9e;
@@ -151,7 +151,7 @@ svg { display: block; flex: none; }
 .routes > li { min-width: 0; }
 .routes > li.is-open { grid-column: 1 / -1; }
 
-.rc { background: var(--c); color: var(--fg); padding: var(--pad-v) var(--pad-h); display: flex; flex-direction: column; gap: 0; aspect-ratio: 1 / 1; font-size: var(--t-body); }
+.rc { --fg: #111111; --on-color-muted: #3b3830; --btn-bg: #000000; --btn-fg: #ffffff; --focus: #1a4fd0; background: var(--c); color: var(--fg); padding: var(--pad-v) var(--pad-h); display: flex; flex-direction: column; gap: 0; aspect-ratio: 1 / 1; font-size: var(--t-body); }
 .rc h2 { font-size: max(1.65rem, calc(50 * var(--s))); line-height: 1.3; font-weight: 700; margin: 0; }
 .rc-desc { font-size: var(--t-body); line-height: 1.3; font-weight: 600; margin-top: 5px; }
 .c-idea { --c: var(--c-idea); }
@@ -165,7 +165,7 @@ svg { display: block; flex: none; }
 .box svg { width: 50%; height: 50%; }
 .toggle .i-minus { display: none; }
 .rc.is-open { aspect-ratio: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 max(2rem, calc(50 * var(--s))); align-content: start; }
-.rc.is-open .toggle { margin-top: var(--gap); width: auto; justify-self: start; justify-content: flex-start; gap: 0.75rem; flex-direction: row-reverse; font-size: max(1rem, calc(20 * var(--s))); }
+.rc.is-open .toggle { margin: 0 0 var(--gap); order: -1; width: auto; justify-self: end; justify-content: flex-end; gap: 0.75rem; font-size: max(1rem, calc(20 * var(--s))); }
 .rc.is-open .toggle .box { width: max(2.5rem, calc(44 * var(--s))); height: max(2.5rem, calc(44 * var(--s))); }
 .rc.is-open .toggle .i-plus { display: none; }
 .rc.is-open .toggle .i-minus { display: block; }
@@ -187,14 +187,17 @@ svg { display: block; flex: none; }
 .tl a:hover { text-decoration-thickness: 2px; }
 .sub, .choose-label { display: block; font-weight: 400; font-size: max(1rem, calc(18 * var(--s))); line-height: 1.28; color: var(--on-color-muted); }
 .choose { display: grid; gap: 0.6rem; margin-top: 0.3rem; }
-.more { font-weight: 600; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; padding-left: 1.75rem; margin: 0; }
+.more { display: block; width: 100%; min-height: 2.75rem; padding: 0.4rem 0 0.4rem 1.75rem; margin: 0; background: none; border: 0; border-radius: 6px; color: inherit; font: inherit; font-weight: 600; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; text-align: left; text-decoration: underline; text-decoration-thickness: 1px; cursor: pointer; }
+.more:hover { text-decoration-thickness: 2px; }
+.rc:not(.is-open) { cursor: pointer; }
+.rc:not(.is-open):hover .toggle .box { outline: 2px solid var(--fg); outline-offset: 2px; }
 .go { display: inline-flex; align-items: center; gap: 1rem; align-self: flex-end; margin-top: auto; min-height: var(--btn); font-weight: 700; font-size: var(--t-body); line-height: 1.3; text-decoration: none; }
 .go:hover .box, .go:focus-visible .box { outline: 2px solid var(--fg); outline-offset: 2px; }
 
 @media (min-width: 48rem) {
-  .rc.is-open { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; grid-template-areas: "title steps" "desc steps" "details steps" "toggle steps"; }
+  .rc.is-open { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "title toggle" "desc steps" "details steps"; }
   .rc.is-open .steps { margin-top: 0; }
-  .rc.is-open .toggle { align-self: end; }
+  .rc.is-open .toggle { align-self: start; margin: 0; }
   .rc.is-open h2 { grid-area: title; }
   .rc.is-open .rc-desc { grid-area: desc; }
   .rc.is-open .toggle { grid-area: toggle; }
@@ -225,6 +228,8 @@ svg { display: block; flex: none; }
 /* Footer: 200 below the pick section, line 20 above the text, text 20/20 regular */
 footer { margin-top: max(4rem, calc(200 * var(--s))); padding-top: 1.25rem; border-top: 2px solid var(--rule); color: var(--muted); font-size: 20px; font-weight: 400; line-height: 1.35; display: grid; gap: 0.35rem; }
 @media (min-width: 60rem) { footer { line-height: 1; } }
+footer p { line-height: 1.35; }
+footer a { color: inherit; text-decoration: underline; text-underline-offset: 0.15em; }
 
 /* Card page, from the Figma template. Same scale unit (--s) as the home page. */
 :root { --sec: max(1.5rem, calc(48 * var(--s))); --panel-w: max(12rem, calc(268 * var(--s))); }
@@ -275,6 +280,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 .path { margin-top: max(4rem, calc(200 * var(--s))); display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
 .scroll-hint { display: flex; align-items: center; justify-self: end; gap: 1.25rem; margin: 0; padding: 0.25rem 0; min-height: 2.75rem; background: none; border: 0; cursor: pointer; border-radius: 6px; font-family: inherit; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; font-weight: 600; color: var(--muted); }
 .scroll-hint:hover { color: var(--fg); }
+.scroll-hint.is-off { visibility: hidden; }
 .path-scroll, .path-cards { scrollbar-width: none; }
 .path-scroll::-webkit-scrollbar, .path-cards::-webkit-scrollbar { display: none; }
 .scroll-hint svg { width: max(4rem, calc(190 * var(--s))); height: 1.5rem; color: var(--ph); }
@@ -351,6 +357,14 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 :root { --ex-pad: max(6px, calc(10 * var(--s))); --ex-in: max(1rem, calc(36 * var(--s))); }
 .ex-cards { display: flex; flex-wrap: wrap; gap: var(--gap); }
 .ex-card { display: grid; gap: var(--ex-pad); align-content: start; width: calc(var(--mm-w) + 2 * var(--ex-pad)); padding: var(--ex-pad); text-align: center; }
+.ex-card.pick { padding: 0; }
+.ex-face { position: relative; display: grid; flex: 1; gap: var(--ex-pad); align-content: start; box-sizing: border-box; padding: calc(var(--ex-pad) - var(--mm-b)); border: var(--mm-b) solid transparent; border-radius: 18px 24px 16px 26px / 24px 16px 26px 18px; text-align: center; }
+.mm:hover input:not(:checked) + .ex-face .mm-tile { background: var(--line); }
+.mm input:checked + .ex-face { background: var(--sel-bg); border-color: var(--sel-line); }
+.mm input:checked + .ex-face .mm-tile { background: transparent; }
+.mm input:focus-visible + .ex-face { outline: 3px solid var(--focus); outline-offset: 3px; }
+.mm input:checked + .ex-face .mm-check { display: flex; }
+.ex-hint { margin: 0 0 var(--gap); font-size: var(--t-body); line-height: 1.3; }
 .ex-type { display: none; font-size: max(1rem, calc(18 * var(--s))); line-height: 1.3; color: var(--muted); }
 .ex-box { border-top: 1px solid var(--line); }
 .ex-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; align-items: center; padding: var(--gap) var(--ex-in); border-bottom: 1px solid var(--line); }
@@ -391,6 +405,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
           <p>Tell us what you already have. We'll point you to the activities that fit.</p>
           <p>Pick the closest match. If two fit, choose the one nearer to the work you need to do this week.</p>
           <p>You don't have to finish every activity on a path. Your project may change as you go, so feel free to explore other activities.</p>
+          <p>Working as a group? Pick one shared place to keep a single record, such as one shared screen, a FigJam board, or a shared document. Choose whatever everyone on your team can use comfortably.</p>
         </li>
       </ul>
       <hr class="rule">
@@ -415,7 +430,8 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 
   <footer>
     <p>Draft prototype for a graduate design research project. The redesign is based on interviews with industry designers (six in total).</p>
-    <p>The Inclusive Activity Cards were created by Microsoft. This prototype is not made or endorsed by Microsoft. Only two activities are redesigned here. For the rest, use the link on each activity to read Microsoft's original.</p>
+    <p>This prototype adapts the Inclusive Activity Cards, created by Microsoft (© Microsoft 2016, licensed under Creative Commons Attribution-NonCommercial-NoDerivatives, CC BY-NC-ND). It is not made or endorsed by Microsoft, and it is shared only for coursework and graduate review, not for distribution.</p>
+    <p>Only two activities are redesigned here. For the rest, use the link on each activity to read <a href="https://inclusive.microsoft.design/articles/inclusive-activity-cards" target="_blank" rel="noopener">Microsoft's original<span class="sr"> (opens in a new tab)</span></a>.</p>
   </footer>
 </div>
 
@@ -811,10 +827,24 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       h("div", null, h("dt", null, "Other People"), h("dd", null, h("span", { class: "people" }, svg(ICON.people, 24), r.people))));
     var go = h("a", { class: "go", href: "#card-" + r.start + "--" + r.id },
       "Start Your Path", h("span", { class: "sr" }, ", first step: " + CARDS[r.start].name), box());
+    var nRest = r.rest.length, moreBtn = null, restLis = [];
+    if (nRest) {
+      var noun = nRest === 1 ? "Activity" : "Activities";
+      restLis = r.rest.map(function (i, k) { var li2 = stepItem({ id: i }); li2.id = "rest-" + r.id + "-" + k; li2.hidden = true; return li2; });
+      moreBtn = h("button", { type: "button", class: "more", "aria-expanded": "false", "aria-controls": restLis.map(function (x) { return x.id; }).join(" ") },
+        h("span", null, "+ " + nRest + " More " + noun));
+      moreBtn.addEventListener("click", function () {
+        var on = moreBtn.getAttribute("aria-expanded") !== "true";
+        moreBtn.setAttribute("aria-expanded", on ? "true" : "false");
+        restLis.forEach(function (x) { x.hidden = !on; });
+        moreBtn.firstChild.textContent = on ? "Show Fewer Activities" : "+ " + nRest + " More " + noun;
+        statusEl.textContent = on ? "Showing " + nRest + " more " + noun.toLowerCase() + "." : "Showing fewer activities.";
+      });
+    }
     var steps = h("div", { class: "steps" },
       h("p", { class: "steps-label", id: lid }, "Start with these steps"),
-      h("ol", { class: "tl", "aria-labelledby": lid }, r.steps.map(stepItem)),
-      r.more ? h("p", { class: "more" }, "+ " + r.more + " More " + (r.more === 1 ? "Activity" : "Activities")) : null,
+      h("ol", { class: "tl", "aria-labelledby": lid }, r.steps.map(stepItem).concat(restLis)),
+      moreBtn,
       go);
     var panel = h("div", { class: "panel", id: pid, hidden: true }, details, steps);
     var li = h("li", { class: "rc " + r.color, id: "rc-" + r.id },
@@ -824,6 +854,11 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     items[r.id] = { li: li, toggle: toggle, panel: panel, label: toggle.querySelector(".t-label"), route: r };
 
     toggle.addEventListener("click", function () { setOpen(openId === r.id ? null : r.id, true); });
+    /* The whole closed card opens the path details. The button stays for keyboard and screen reader use. */
+    li.addEventListener("click", function (e) {
+      if (openId === r.id || e.target.closest(".toggle, a, button")) return;
+      setOpen(r.id, true);
+    });
     li.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && openId === r.id) { setOpen(null, true); toggle.focus(); }
     });
@@ -931,15 +966,14 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     var out = [], re = /\{\{([a-z0-9-]+)\|([^}]+)\}\}/g, last = 0, m;
     while ((m = re.exec(t))) {
       if (m.index > last) out.push(t.slice(last, m.index));
-      if (CARDS[m[1]] && CARDS[m[1]].ref) out.push(h("a", { href: absHash(m[1]), target: "_blank", rel: "noopener" }, m[2], h("span", { class: "sr" }, " (opens in a new tab)")));
+      if (CARDS[m[1]] && CARDS[m[1]].ref) out.push(h("a", { href: hashFor(m[1]) }, m[2], h("span", { class: "sr" }, " (reference card)")));
       else out.push(h("a", { href: hashFor(m[1], routeId) }, m[2]));
       last = re.lastIndex;
     }
     if (last < t.length) out.push(t.slice(last));
     return out;
   }
-  /* Reference cards open in a new tab so the person keeps their place in the activity. The new tab starts on that card with no path. */
-  function absHash(id) { return (/^(https?|file):/.test(location.href) ? location.href.split("#")[0] : "") + "#card-" + id; }
+  /* Reference cards open in the same tab with no path. A new tab can't work here: the page is served inside a frame that the browser refuses to open on its own. Return brings the person back to the same place in the activity (see scrollMem). */
   function hashFor(id, routeId) { return "#card-" + id + (routeId ? "--" + routeId : ""); }
 
   /* The rest of the path after this card. Mismatch To Solution I and II count as one step in the route, but on card I the next stop is II. */
@@ -969,8 +1003,8 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 
   function refButtons(ids, routeId) {
     return h("div", { class: "refs" }, ids.map(function (rid) {
-      return h("a", { class: "refbtn", href: absHash(rid), target: "_blank", rel: "noopener" }, phIcon(), nameNode(CARDS[rid].name), h("span", { class: "sr" }, " (reference card, opens in a new tab)"),
-        h("span", { class: "circ", "aria-hidden": "true" }, svg(ARROW_UR, 20)));
+      return h("a", { class: "refbtn", href: hashFor(rid) }, phIcon(), nameNode(CARDS[rid].name), h("span", { class: "sr" }, " (reference card)"),
+        h("span", { class: "circ", "aria-hidden": "true" }, svg(ARROW_R, 20)));
     }));
   }
 
@@ -1049,7 +1083,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
      layout: "pictures" (three headings with a picture), "side" (heading with example cards at the right), "spectrum" (same, with Permanent / Temporary / Situational columns), "strip" (one row of example cards).
      step2.items are the extra examples people can select. g points to a group (for the screen-reader label). */
   var REF_START = "These examples are here to prompt your thinking. People and situations vary more than any list can cover. Talk to real people to find out what's missing.";
-  var REF_NOTE = "These examples are a starting point, not every way a design can leave someone out.";
+  var REF_NOTE = "This isn't a complete list. Your design may involve things that aren't listed here, so keep thinking beyond it.";
   var STEP_END = " Record them in any way that works for you. There are no wrong answers, and you can add more later.";
   function pickItems(list, g) { return list.map(function (t) { return g == null ? { t: t } : { t: t, g: g }; }); }
   var REFS = {
@@ -1080,7 +1114,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       step1: { title: "What Are The Conditions Your Design Will Be Used In?", text: "List the conditions people might be in when using your design." + STEP_END },
       step2: {
         title: "Do You Consider The Following Conditions Too?",
-        text: "Go through the conditions below. Select any that your design might be used in to add them to your new list. Think about conditions you haven't considered yet.",
+        text: "Go through the conditions above and below. Select any that your design might be used in to add them to your new list. Think about conditions you haven't considered yet.",
         legend: "Condition examples. Select any that your design might be used in.", listTitle: "Your New Conditions List",
         items: pickItems(["Foggy", "Humid", "Thunderstorm", "Heat Wave", "Icy Ground", "Strong Sunlight", "Dim Indoor Light", "Flickering Light", "Dusk", "Midnight", "Early Morning", "Echoing Room", "Construction Noise", "Music Playing", "Crowd Noise", "Smoky Air"])
       }
@@ -1098,7 +1132,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       step1: { title: "How Might The Persona Spectrum Affect People Using Your Design?", text: "Pick one limitation that matters for your design and list how it could be permanent, temporary, and situational." + STEP_END },
       step2: {
         title: "Do You Consider The Following Situations Too?",
-        text: "Go through the situations below. Select any that people using your design might face to add them to your new list. Think about situations you haven't considered yet.",
+        text: "Go through the situations above and below. Select any that people using your design might face to add them to your new list. Think about situations you haven't considered yet.",
         legend: "Situation examples. Select any that people using your design might face.", listTitle: "Your New Situations List",
         items: pickItems(["Wearing Gloves", "Carrying Groceries", "Holding A Coffee Cup", "Wet Hands", "Bright Sunlight On A Screen", "Loud Concert", "Learning The Language", "Tired After A Night Shift", "Stress Or Panic", "Temporary Brain Injury", "Mentally Overloaded", "Interrupted Every Few Minutes"])
       }
@@ -1111,7 +1145,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       step1: { title: "What Are The Physical Contexts Your Design Will Be Used In?", text: "List the physical contexts you imagine your design will be used in." + STEP_END },
       step2: {
         title: "Do You Consider The Following Contexts Too?",
-        text: "Go through the contexts below. Select any that your design might be used in to add them to your new list. Think about places you haven't considered yet.",
+        text: "Go through the contexts above and below. Select any that your design might be used in to add them to your new list. Think about places you haven't considered yet.",
         legend: "Physical context examples. Select any that your design might be used in.", listTitle: "Your New Contexts List",
         items: pickItems(["At Work", "In A Classroom", "In A Hospital", "At The Airport", "In A Train Station", "At A Grocery Store", "In A Restaurant", "At The Gym", "In An Elevator", "On A Sidewalk", "In A Parking Lot", "At A Concert", "On A Plane", "In A Public Restroom", "In A Park", "In A Stairwell"])
       }
@@ -1124,7 +1158,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       step1: { title: "What Are The Social Contexts Your Design Will Be Used In?", text: "List the social contexts you imagine your design will be used in." + STEP_END },
       step2: {
         title: "Do You Consider The Following Social Contexts Too?",
-        text: "Go through the contexts below. Select any that your design might be used in to add them to your new list. Think about social settings you haven't considered yet.",
+        text: "Go through the contexts above and below. Select any that your design might be used in to add them to your new list. Think about social settings you haven't considered yet.",
         legend: "Social context examples. Select any that your design might be used in.", listTitle: "Your New Social Contexts List",
         items: pickItems(["In A Virtual Meeting", "In An Online Community", "In A Classroom", "In A Loose Crowd", "In A Packed Crowd", "With A Stranger", "With A Customer", "With Your Manager", "At A Party", "In A Quiet Shared Space", "With Children", "In A Public Meeting", "While Others Are Waiting"])
       }
@@ -1137,7 +1171,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       step1: { title: "What Roles Does Technology Play In Your Design?", text: "List the roles technology plays in your design." + STEP_END },
       step2: {
         title: "Do You Consider The Following Roles Too?",
-        text: "Go through the roles below. Select any that your design might play to add them to your new list. Think about roles you haven't considered yet.",
+        text: "Go through the roles above and below. Select any that your design might play to add them to your new list. Think about roles you haven't considered yet.",
         legend: "Role examples. Select any that your design might play.", listTitle: "Your New Roles List",
         items: pickItems(["Teach", "Recommend", "Remind", "Monitor", "Connect People", "Entertain", "Guide", "Search", "Coach", "Schedule", "Pay", "Create", "Alert", "Predict", "Store", "Build Community", "Play A Game", "Collaborate", "Watch Media"])
       }
@@ -1156,7 +1190,15 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
   var picks = {};
   var mmCheck = null;
 
-  function exCard(label, type) {
+  function exCard(label, type, mk) {
+    if (mk) {
+      return h("li", { class: "ex-card pick" }, h("label", { class: "mm" }, mk(label, type),
+        h("span", { class: "ex-face" },
+          h("span", { class: "mm-tile", "aria-hidden": "true" }),
+          h("span", { class: "mm-name" }, label, type ? h("span", { class: "sr" }, " (" + type + ")") : null),
+          type ? h("small", { class: "ex-type", "aria-hidden": "true" }, type) : null,
+          h("span", { class: "mm-check", "aria-hidden": "true" }, svg(CHECK, 18)))));
+    }
     return h("li", { class: "ex-card" },
       h("span", { class: "mm-tile", "aria-hidden": "true" }),
       h("span", { class: "mm-name" }, label, type ? h("span", { class: "sr" }, " (" + type + ")") : null),
@@ -1167,7 +1209,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     var cfg = REFS[id], s2 = cfg.step2;
     var arr = picks[id] || (picks[id] = []);
     var boxes = {};
-    var items = s2 ? s2.items : [];
+    var items = s2 ? s2.items.slice() : [];
     var listH = s2 ? h("h3", { class: "mm-list-h", id: "mm-list-h", tabindex: "-1" }, s2.listTitle) : null;
     var picked = h("ul", { class: "mm-picked", "aria-labelledby": "mm-list-h" });
     var empty = h("p", { class: "mm-empty" }, "Nothing here yet. Select an example above to add it.");
@@ -1198,6 +1240,22 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       var next = arr.length ? picked.querySelector('[data-i="' + arr[Math.min(pos, arr.length - 1)] + '"]') : null;
       (next || listH).focus();
     }
+    /* One checkbox per example. The same list holds the top examples and the extras. */
+    function makeBox(i) {
+      var cb = h("input", { type: "checkbox" });
+      cb.checked = arr.indexOf(i) > -1;
+      boxes[i] = cb;
+      cb.addEventListener("change", function () {
+        var pos = arr.indexOf(i);
+        if (cb.checked && pos < 0) arr.push(i);
+        if (!cb.checked && pos > -1) arr.splice(pos, 1);
+        renderPicked();
+        say((cb.checked ? "Added " : "Removed ") + items[i].t + ". " + count());
+      });
+      return cb;
+    }
+    var selectable = !!s2 && cfg.layout !== "pictures";
+    var mkEx = selectable ? function (label, type) { items.push({ t: label }); return makeBox(items.length - 1); } : null;
 
     /* 1. The examples */
     var exBody;
@@ -1206,17 +1264,18 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
         return h("li", { class: "mm-row" }, h("h3", null, g.name), h("span", { class: "mm-img", "aria-hidden": "true" }));
       }));
     } else if (cfg.layout === "strip") {
-      exBody = h("div", { class: "ex-strip" }, h("ul", { class: "ex-cards" }, cfg.strip.map(function (l) { return exCard(l); })));
+      exBody = h("div", { class: "ex-strip" }, h("ul", { class: "ex-cards" }, cfg.strip.map(function (l) { return exCard(l, null, mkEx); })));
     } else {
       var head = cfg.cols ? h("div", { class: "ex-head", "aria-hidden": "true" }, h("span"), h("div", { class: "ex-th-row" }, cfg.cols.map(function (c) { return h("span", { class: "ex-th" }, c); }))) : null;
       exBody = h("div", { class: "ex-box" }, head,
         h("ul", { class: "ex-rows" }, cfg.groups.map(function (g) {
           return h("li", { class: "ex-row" }, h("h3", null, g.name),
-            h("ul", { class: "ex-cards" }, g.cards.map(function (l, i) { return exCard(l, cfg.cols ? cfg.cols[i] : null); })));
+            h("ul", { class: "ex-cards" }, g.cards.map(function (l, i) { return exCard(l, cfg.cols ? cfg.cols[i] : null, mkEx); })));
         })));
     }
 
     /* 2. Now Your Turn */
+    var nExtras = s2 ? s2.items.length : 0;
     var steps = [h("div", { class: "mm-step has-img" },
       h("span", { class: "mm-pill" }, "Step 1"),
       h("div", { class: "mm-st" }, h("h3", null, cfg.step1.title), h("p", null, cfg.step1.text)),
@@ -1228,17 +1287,8 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
         h("span", { class: "mm-pill" }, "Step 2"),
         h("div", { class: "mm-st" }, h("h3", null, s2.title), h("p", null, s2.text))));
 
-      var cards = h("ul", { class: "mm-cards" }, items.map(function (it, i) {
-        var cb = h("input", { type: "checkbox" });
-        cb.checked = arr.indexOf(i) > -1;
-        boxes[i] = cb;
-        cb.addEventListener("change", function () {
-          var pos = arr.indexOf(i);
-          if (cb.checked && pos < 0) arr.push(i);
-          if (!cb.checked && pos > -1) arr.splice(pos, 1);
-          renderPicked();
-          say((cb.checked ? "Added " : "Removed ") + it.t + ". " + count());
-        });
+      var cards = h("ul", { class: "mm-cards" }, items.slice(0, nExtras).map(function (it, i) {
+        var cb = makeBox(i);
         var alt = it.g != null && cfg.groups && cfg.groups[it.g] ? cfg.groups[it.g].alt : null;
         return h("li", null, h("label", { class: "mm" }, cb,
           h("span", { class: "mm-card" },
@@ -1254,7 +1304,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
         var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         scroller.scrollBy({ left: Math.max(scroller.clientWidth * 0.8, 120), behavior: reduce ? "auto" : "smooth" });
       });
-      mmCheck = function () { hint.hidden = !(scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 24); };
+      mmCheck = function () { var over = scroller.scrollWidth - scroller.clientWidth > 24; hint.hidden = !over; hint.classList.toggle("is-off", over && scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 24); };
       scroller.addEventListener("scroll", mmCheck, { passive: true });
       var fs = h("fieldset", { class: "mm-fs" }, h("legend", { class: "sr" }, s2.legend), h("div", { class: "mm-hint-row" }, hint), scroller);
       renderPicked();
@@ -1262,7 +1312,9 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     }
 
     return h("div", { class: "mm-main" },
-      h("section", { class: "mm-sec", "aria-labelledby": "mm-ex" }, h("h2", { class: "sec-label", id: "mm-ex" }, cfg.exLabel), exBody),
+      h("section", { class: "mm-sec", "aria-labelledby": "mm-ex" }, h("h2", { class: "sec-label", id: "mm-ex" }, cfg.exLabel),
+        selectable ? [h("p", { class: "ex-hint" }, "Select any example that could apply to your design to add it to your list below."),
+          h("fieldset", { class: "mm-fs" }, h("legend", { class: "sr" }, cfg.exLabel + ". Select any that could apply to your design."), exBody)] : exBody),
       h("section", { class: "mm-sec" + (s2 && hasPath ? " mm-end" : ""), "aria-labelledby": "mm-turn" },
         turn, h("div", { class: "mm-steps" }, steps), after));
   }
@@ -1293,7 +1345,9 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     function check() {
       var wide = window.matchMedia("(min-width: 48rem)").matches;
       var el = wide ? scroller : list;
-      hint.hidden = !(rest.length && el.scrollLeft + el.clientWidth < el.scrollWidth - 24);
+      var over = !!rest.length && el.scrollWidth - el.clientWidth > 24;
+      hint.hidden = !over;
+      hint.classList.toggle("is-off", over && el.scrollLeft + el.clientWidth >= el.scrollWidth - 24);
     }
     function target() { return window.matchMedia("(min-width: 48rem)").matches ? scroller : list; }
     hint.addEventListener("click", function () {
@@ -1310,6 +1364,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 
   /* Return goes to the previous page in the app. With no earlier page it goes to the main page. */
   var stack = [location.hash];
+  var scrollMem = {}, lastHash = location.hash;
   function goBack() {
     if (stack.length > 1) history.back();
     else location.hash = "";
@@ -1326,13 +1381,13 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       document.body.classList.add("on-card");
       window.scrollTo(0, 0);
       document.getElementById("card-title").focus();
-      document.title = CARDS[m[1]].name + " | Inclusive Cards Router";
+      document.title = CARDS[m[1]].name + " | Inclusive Design Pathfinder";
       if (pathCheck) pathCheck();
       if (mmCheck) mmCheck();
     } else {
       cardView.hidden = true; home.hidden = false;
       document.body.classList.remove("on-card");
-      document.title = "Inclusive Cards Router";
+      document.title = "Inclusive Design Pathfinder";
       if (fromEvent) {
         window.scrollTo(0, 0);
         document.getElementById("home-title").focus();
@@ -1345,9 +1400,12 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
   ROUTES.forEach(buildRoute);
   buildPick();
   window.addEventListener("hashchange", function () {
-    var h2 = location.hash;
-    if (stack.length >= 2 && stack[stack.length - 2] === h2) stack.pop(); else stack.push(h2);
+    var h2 = location.hash, back = false;
+    scrollMem[lastHash] = window.scrollY;
+    if (stack.length >= 2 && stack[stack.length - 2] === h2) { stack.pop(); back = true; } else stack.push(h2);
+    lastHash = h2;
     route(true);
+    if (back && scrollMem[h2] != null) window.scrollTo(0, scrollMem[h2]);
   });
   route(false);
 })();
