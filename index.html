@@ -390,18 +390,20 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 /* Keep A Note For Record. One note for the whole site, shown on every card page (not the main page).
    Wide screens (80rem, about 1280px, and up): a sticky column beside Instructions or beside "Now Your Turn", as tall as the window, scrolling inside.
    Narrower screens: a bar fixed to the bottom of the screen that opens upward into a panel. */
-:root { --note-w: clamp(21rem, calc(600 * var(--s)), 38rem); --note-top: max(1rem, calc(24 * var(--s))); --note-bg1: #fffdf7; --note-bg2: #fff1d2; --note-line: #c4c0b6; --ed-bg: #ffffff; --chip-bg: #ffd0d9; --chip-fg: #111111; --chip-line: #b49aa0; --press-bg: #ffd698; --press-line: #a86a00; --mic-bg: #ffd0d9; --mic-on: #b03a48; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --note-bg1: #221f17; --note-bg2: #2c2719; --note-line: #5a564a; --ed-bg: #16140e; } }
-:root[data-theme="dark"] { --note-bg1: #221f17; --note-bg2: #2c2719; --note-line: #5a564a; --ed-bg: #16140e; }
+:root { --note-w: clamp(21rem, calc(600 * var(--s)), 38rem); --note-top: max(1rem, calc(24 * var(--s))); --note-bg: #fffbf1; --note-line: #c4c0b6; --note-lbl: #737272; --n5: max(4px, calc(5 * var(--s))); --n10: max(8px, calc(10 * var(--s))); --n15: max(12px, calc(15 * var(--s))); --n20: max(16px, calc(20 * var(--s))); --ed-bg: #ffffff; --chip-bg: #ffd0d9; --chip-fg: #111111; --chip-line: #b5b5b5; --press-bg: #ffd698; --press-line: #a86a00; --mic-bg: #ffd0d9; --mic-on: #b03a48; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --note-bg: #221f17; --note-line: #5a564a; --note-lbl: var(--muted); --ed-bg: #16140e; } }
+:root[data-theme="dark"] { --note-bg: #221f17; --note-line: #5a564a; --note-lbl: var(--muted); --ed-bg: #16140e; }
 .note-slot { display: none; min-width: 0; }
-.note { color: var(--fg); background: linear-gradient(165deg, var(--note-bg1), var(--note-bg2)); border: 2px solid var(--note-line); border-radius: 20px; display: flex; flex-direction: column; min-height: 0; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; }
+.note { color: var(--fg); background: var(--note-bg); border: 2px solid var(--note-line); border-radius: 20px; display: flex; flex-direction: column; min-height: 0; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; }
 .note-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: max(0.85rem, calc(22 * var(--s))) max(1rem, calc(26 * var(--s))); flex: none; }
+.note.is-open .note-head { padding-bottom: 0; }
 .note-head h2 { font-size: max(1.2rem, calc(28 * var(--s))); line-height: 1.25; }
 .note-tog { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; padding: 0; background: none; border: 0; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: max(0.95rem, calc(18 * var(--s))); flex: none; white-space: nowrap; }
 .note-tog .box { width: 2.5rem; height: 2.5rem; }
 .note-tog:hover .box { outline: 2px solid var(--fg); outline-offset: 2px; }
-.note-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding: 0 max(1rem, calc(26 * var(--s))) max(1rem, calc(22 * var(--s))); }
-.note-lbl { margin: 0; font-weight: 700; color: var(--muted); }
+.note-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0; padding: var(--n20) max(1rem, calc(26 * var(--s))) max(1rem, calc(22 * var(--s))); }
+.note-lbl { margin: 0; font-size: var(--t-body); line-height: 1.2917; font-weight: 600; color: var(--note-lbl); }
+.note-body > .note-lbl { margin-bottom: var(--n10); }
 .note-refs { border-bottom: 1px solid var(--fg); flex: none; }
 .note-refs > p { padding: 0.5rem 0 0.85rem; color: var(--muted); font-size: max(0.95rem, calc(18 * var(--s))); }
 .nsec { border-top: 1px solid var(--fg); }
@@ -411,18 +413,19 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 .nsec-b svg { width: 1.4rem; height: 1.4rem; }
 .nsec-b[aria-expanded="true"] svg { transform: rotate(180deg); }
 .nchips { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.1rem 0 0.85rem; }
-.nchip, .nadd { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.6rem; padding: 0.3rem 0.55rem 0.3rem 0.65rem; border: 1.5px solid var(--chip-line); border-radius: 6px; font-size: inherit; line-height: 1.25; text-align: left; }
-.nchip { background: var(--chip-bg); color: var(--chip-fg); cursor: pointer; }
-.nchip:hover { border-color: var(--chip-fg); }
-.nchip svg, .nadd svg { width: 1.1em; height: 1.1em; }
+.nchip, .nadd { display: inline-flex; align-items: center; gap: var(--n10); padding: var(--n5); border: 2px solid var(--chip-line); border-radius: 6px; font-size: var(--t-body); line-height: 1.2917; font-weight: 500; text-align: left; }
+.nchip { background: var(--chip-bg); color: #000000; cursor: pointer; }
+.nchip:hover { border-color: #000000; }
+.nchip svg, .nadd svg { width: 1em; height: 1em; }
 .nadd { background: var(--ed-bg); color: var(--muted); border-color: var(--line); cursor: pointer; }
 .nadd:hover { color: var(--fg); border-color: var(--fg); }
 .nadd-in { cursor: text; color: var(--fg); }
 .nadd-in:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
 .nadd-in input { width: 11em; min-width: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; outline: none; }
 .nempty { padding: 0 0 0.85rem; color: var(--muted); font-size: max(0.95rem, calc(18 * var(--s))); }
-.note-pad { flex: 1 0 auto; display: flex; flex-direction: column; gap: 0.5rem; min-height: 16rem; }
-.note-box { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 13rem; background: var(--ed-bg); border: 3px solid var(--fg); border-radius: 22px 30px 20px 32px / 30px 20px 32px 22px; }
+.note-pad { flex: 1 0 auto; display: flex; flex-direction: column; gap: var(--n15); min-height: 16rem; margin-top: var(--n20); }
+.note-box { position: relative; isolation: isolate; flex: 1 1 auto; display: flex; flex-direction: column; min-height: 13rem; border-radius: 24px; }
+.note-box::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ed-bg); border: 3px solid var(--fg); border-radius: 24px; filter: url(#note-squiggle); pointer-events: none; }
 .note-box:has(.note-ed:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
 .note-ed { position: relative; flex: 1 1 auto; min-height: 7rem; overflow-y: auto; padding: 0.9rem 1.1rem 0.5rem; font-size: inherit; line-height: 1.45; overflow-wrap: anywhere; }
 .note-ed:focus-visible { outline: none; }
@@ -434,10 +437,8 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 .fmt { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; padding: 0; background: none; border: 2px solid transparent; border-radius: 6px; cursor: pointer; font-size: 1.15rem; line-height: 1; }
 .fmt:hover { border-color: var(--line); }
 .fmt[aria-pressed="true"] { background: var(--press-bg); border-color: var(--press-line); color: #111111; }
-.fmt svg { width: 1.35rem; height: 1.35rem; }
-.fmt-b { font-weight: 700; }
-.fmt-i { font-style: italic; font-family: Georgia, "Times New Roman", serif; }
-.fmt-u { text-decoration: underline; text-underline-offset: 0.15em; }
+.fmt svg { width: 24px; height: 24px; }
+.fmt svg * { stroke-width: 3px; vector-effect: non-scaling-stroke; }
 .mic { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 3.25rem; height: 3.25rem; padding: 0; border: 0; border-radius: 50%; background: var(--mic-bg); color: #111111; box-shadow: 0 2px 7px rgba(0, 0, 0, 0.25); cursor: pointer; }
 .mic svg { width: 1.5rem; height: 1.5rem; }
 .mic:hover { outline: 2px solid var(--fg); outline-offset: 2px; }
@@ -1499,10 +1500,10 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
   var CHEV = '<path d="M6 9l6 6 6-6"/>';
   var MIC = '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>';
   var FMT = [
-    { cmd: "bold", label: "Bold", keys: "Control+B", text: "B", cls: "fmt-b" },
-    { cmd: "italic", label: "Italic", keys: "Control+I", text: "I", cls: "fmt-i" },
-    { cmd: "underline", label: "Underline", keys: "Control+U", text: "U", cls: "fmt-u" },
-    { cmd: "insertUnorderedList", label: "Bulleted list", icon: '<path d="M9.5 6h11M9.5 12h11M9.5 18h11"/><circle cx="4.5" cy="6" r="0.6"/><circle cx="4.5" cy="12" r="0.6"/><circle cx="4.5" cy="18" r="0.6"/>' },
+    { cmd: "bold", label: "Bold", keys: "Control+B", icon: '<path d="M7 4h5.5a4 4 0 0 1 0 8H7zM7 12h6.5a4 4 0 0 1 0 8H7z"/>' },
+    { cmd: "italic", label: "Italic", keys: "Control+I", icon: '<path d="M11 4h7M6 20h7M14.5 4l-5 16"/>' },
+    { cmd: "underline", label: "Underline", keys: "Control+U", icon: '<path d="M7 4v7a5 5 0 0 0 10 0V4M5 21h14"/>' },
+    { cmd: "insertUnorderedList", label: "Bulleted list", icon: '<path d="M9.5 6h11M9.5 12h11M9.5 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>' },
     { cmd: "insertOrderedList", label: "Numbered list", icon: '<path d="M10 6h10.5M10 12h10.5M10 18h10.5"/><path d="M3.5 4.5l1.5-1v5M3.3 11.2c.4-.8 2.6-.9 2.6.4 0 1-2.7 1.7-2.7 2.9h2.9M3.4 16.2h2.4l-1.3 1.4c1 0 1.6.4 1.6 1.2 0 1.2-2 1.4-2.8.6"/>' },
     { cmd: "check", label: "Checklist", keys: "Control+Enter", icon: '<path d="M10.5 6h10M10.5 12h10M10.5 18h10"/><path d="M3 6l1.6 1.6L7.5 4.6M3 12l1.6 1.6 2.9-3M3 18l1.6 1.6 2.9-3"/>' }
   ];
@@ -1560,6 +1561,8 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
       h("div", { class: "note-foot" }, noteMsg, h("div", { class: "note-acts" }, dlBtn, cpBtn))));
   var noteEl = h("aside", { class: "note", "aria-labelledby": "note-title" }, noteHead, noteBody);
   var scrim = h("div", { class: "note-scrim", hidden: true });
+  /* The squiggly outline of the note box (see .note-box::before) */
+  document.body.insertAdjacentHTML("beforeend", '<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute"><filter id="note-squiggle" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></svg>');
   var dock = h("div", { class: "note-dock" });
   document.body.append(scrim, dock);
 
