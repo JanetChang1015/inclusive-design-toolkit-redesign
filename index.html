@@ -458,7 +458,9 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 /* Narrower screens: the bar at the bottom, and the panel it opens */
 .note-dock .note { position: fixed; z-index: 20; left: max(0.75rem, calc(40 * var(--s))); right: max(0.75rem, calc(40 * var(--s))); bottom: max(0.75rem, env(safe-area-inset-bottom, 0px)); max-width: 46rem; margin-inline: auto; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2); }
 .note-dock .note:not(.is-open) .note-head { cursor: pointer; }
+.note-dock.is-corner .note { left: auto; width: var(--note-w); max-width: calc(100vw - 2rem); margin: 0; }
 .note-dock .note.is-open { height: min(85vh, 52rem); height: min(85dvh, 52rem); }
+.note-toast { position: fixed; z-index: 30; top: 1rem; left: 50%; transform: translateX(-50%); max-width: calc(100vw - 2rem); padding: 0.75rem 1.25rem; border-radius: 12px; background: var(--btn-bg); color: var(--btn-fg); font-weight: 600; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2); }
 .note-scrim { position: fixed; inset: 0; z-index: 19; background: rgba(0, 0, 0, 0.4); }
 body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
 @media (max-width: 30rem) { .note-fmt { gap: 0; } .fmt { width: 2.2rem; } .mic { width: 2.85rem; height: 2.85rem; } .note-tools { padding-inline: 0.45rem 0.5rem; } }
@@ -469,8 +471,8 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
 
 /* Wide screens: the note column */
 @media (min-width: 80rem) {
-  .bottom.has-note, .turn-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--note-w); gap: var(--sec) max(2rem, calc(60 * var(--s))); align-items: stretch; }
-  .note-slot { display: block; }
+  body.note-col .bottom.has-note, body.note-col .turn-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--note-w); gap: var(--sec) max(2rem, calc(60 * var(--s))); align-items: stretch; }
+  body.note-col .note-slot { display: block; }
   .note-slot > .note { position: sticky; top: var(--note-top); }
   .note-slot > .note.is-open { height: calc(100vh - 2 * var(--note-top)); height: calc(100dvh - 2 * var(--note-top)); }
   /* Activity cards: Purpose, You Will Need and Materials stay as they are; Instructions + note in one row; Tips full width below */
@@ -478,10 +480,10 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
   .cols.act .right { display: contents; }
   .cols.act .mat { grid-area: mat; }
   .cols.act .tips { grid-area: tips; }
-  /* Reference cards: the picks list lives in the note, so it isn't shown twice */
-  .turn-row .mm-list { display: none; }
-  .turn-row .mm-scroll { margin-right: -8px; padding-inline-end: 8px; }
-  .turn-row .mm-step.has-img { grid-template-columns: max(5rem, calc(100 * var(--s))) minmax(0, 1fr) minmax(0, 0.8fr); }
+  /* Reference cards: while the note is open beside it, the picks list lives in the note, so it isn't shown twice. Hide the note and the list is back on the page. */
+  body.note-col .turn-row .mm-list { display: none; }
+  body.note-col .turn-row .mm-scroll { margin-right: -8px; padding-inline-end: 8px; }
+  body.note-col .turn-row .mm-step.has-img { grid-template-columns: max(5rem, calc(100 * var(--s))) minmax(0, 1fr) minmax(0, 0.8fr); }
 }
 </style>
 
@@ -1596,23 +1598,30 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
     noteTog.querySelector(".i-plus").style.display = open ? "none" : "";
     noteTog.querySelector(".i-minus").style.display = open ? "" : "none";
   }
+  /* The note is a bar at the bottom of the screen whenever it isn't open in its column or as the panel */
+  function inBar() { return onCard && !isOpen(); }
   function measureBar() {
-    if (!onCard || isWide() || sheetOpen) return;
+    if (!onCard || (isWide() && store.wideOpen) || sheetOpen) return;
     var hgt = noteEl.offsetHeight;
     document.documentElement.style.setProperty("--bar-h", hgt + "px");
     document.documentElement.style.scrollPaddingBottom = (hgt + 24) + "px";
   }
   function placeNote() {
     if (!onCard) return;
-    if (isWide()) {
-      if (sheetOpen) closeSheet(false);
+    var wide = isWide();
+    if (wide && sheetOpen) closeSheet(false);
+    var inColumn = wide && store.wideOpen;
+    if (inColumn) {
       noteSlot.append(noteEl);
       document.body.classList.remove("note-bar");
       document.documentElement.style.scrollPaddingBottom = "";
     } else {
+      /* Collapsed on a wide screen: a small bar in the bottom-right corner, so the page gets its full width back */
+      dock.classList.toggle("is-corner", wide);
       dock.append(noteEl);
       document.body.classList.add("note-bar");
     }
+    document.body.classList.toggle("note-col", inColumn);
     applyOpen();
     measureBar();
   }
@@ -1636,12 +1645,30 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
     if (returnFocus) noteTog.focus();
   }
   noteTog.addEventListener("click", function () {
-    if (isWide()) { store.wideOpen = !store.wideOpen; applyOpen(); saveSoon(); }
+    if (isWide()) setWideOpen(!store.wideOpen);
     else if (sheetOpen) closeSheet(true);
     else openSheet();
   });
+  function setWideOpen(open) {
+    store.wideOpen = open;
+    saveSoon();
+    placeNote();
+    noteTog.focus({ preventScroll: true });
+    /* Opening moves the note into its column beside the steps; bring it into view if you'd scrolled past that part */
+    if (open) {
+      var r = noteEl.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) {
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        noteEl.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      }
+    }
+    statusEl.textContent = open ? "Note open beside the steps." : "Note hidden. Show it again from the bar at the bottom of the screen.";
+  }
   /* The whole bar opens the note, as in the collapsed design. The button stays for keyboard and screen reader use. */
-  noteHead.addEventListener("click", function (e) { if (!e.target.closest("button") && !isWide() && !sheetOpen) openSheet(); });
+  noteHead.addEventListener("click", function (e) {
+    if (e.target.closest("button") || !inBar()) return;
+    if (isWide()) setWideOpen(true); else openSheet();
+  });
   noteEl.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheetOpen) { e.preventDefault(); closeSheet(true); } });
   scrim.addEventListener("click", function () { closeSheet(true); });
   if (mqNote.addEventListener) mqNote.addEventListener("change", placeNote);
@@ -1661,7 +1688,7 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
     if (recOn && rec) rec.stop();
     if (sheetOpen) closeSheet(false);
     noteEl.remove();
-    document.body.classList.remove("note-bar");
+    document.body.classList.remove("note-bar", "note-col");
     document.documentElement.style.scrollPaddingBottom = "";
   }
 
@@ -1985,6 +2012,26 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
     else fallback();
   });
 
+  /* ----- Facilitator reset: open the page address with #reset on the end ----- */
+  /* Wipes the note and every reference card list in this browser, so the next participant starts fresh. There is no button for it on purpose. */
+  var toast = h("p", { class: "note-toast", hidden: true });
+  document.body.append(toast);
+  function resetNote() {
+    if (recOn && rec) rec.stop();
+    Object.keys(picks).forEach(function (k) { delete picks[k]; });
+    store.sec = {};
+    store.wideOpen = true;
+    ed.innerHTML = "";
+    lastRange = null;
+    checkEmpty();
+    try { localStorage.removeItem(NOTE_KEY); } catch (e) {}
+    toast.textContent = "Note cleared. Ready for the next session.";
+    toast.hidden = false;
+    statusEl.textContent = toast.textContent;
+    setTimeout(function () { toast.hidden = true; }, 4000);
+    try { history.replaceState(null, "", location.href.split("#")[0]); } catch (e) { location.hash = ""; }
+  }
+
   /* Return goes to the previous page in the app. With no earlier page it goes to the main page. */
   var stack = [location.hash];
   var scrollMem = {}, lastHash = location.hash;
@@ -2025,6 +2072,7 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
   ROUTES.forEach(buildRoute);
   buildPick();
   window.addEventListener("hashchange", function () {
+    if (location.hash === "#reset") resetNote();
     var h2 = location.hash, back = false;
     scrollMem[lastHash] = window.scrollY;
     if (stack.length >= 2 && stack[stack.length - 2] === h2) { stack.pop(); back = true; } else stack.push(h2);
@@ -2032,6 +2080,7 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
     route(true);
     if (back && scrollMem[h2] != null) window.scrollTo(0, scrollMem[h2]);
   });
+  if (location.hash === "#reset") { resetNote(); stack = [location.hash]; lastHash = location.hash; }
   route(false);
 })();
 </script>
