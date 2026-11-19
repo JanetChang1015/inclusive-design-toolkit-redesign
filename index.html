@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Inclusive Design Pathfinder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -386,6 +386,102 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
 }
 
 @media (prefers-reduced-motion: no-preference) { .pt, .pt-go .box { transition: border-color 0.15s, background-color 0.15s; } }
+
+/* Keep A Note For Record. One note for the whole site, shown on every card page (not the main page).
+   Wide screens (80rem, about 1280px, and up): a sticky column beside Instructions or beside "Now Your Turn", as tall as the window, scrolling inside.
+   Narrower screens: a bar fixed to the bottom of the screen that opens upward into a panel. */
+:root { --note-w: clamp(21rem, calc(600 * var(--s)), 38rem); --note-top: max(1rem, calc(24 * var(--s))); --note-bg1: #fffdf7; --note-bg2: #fff1d2; --note-line: #c4c0b6; --ed-bg: #ffffff; --chip-bg: #ffd0d9; --chip-fg: #111111; --chip-line: #b49aa0; --press-bg: #ffd698; --press-line: #a86a00; --mic-bg: #ffd0d9; --mic-on: #b03a48; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --note-bg1: #221f17; --note-bg2: #2c2719; --note-line: #5a564a; --ed-bg: #16140e; } }
+:root[data-theme="dark"] { --note-bg1: #221f17; --note-bg2: #2c2719; --note-line: #5a564a; --ed-bg: #16140e; }
+.note-slot { display: none; min-width: 0; }
+.note { color: var(--fg); background: linear-gradient(165deg, var(--note-bg1), var(--note-bg2)); border: 2px solid var(--note-line); border-radius: 20px; display: flex; flex-direction: column; min-height: 0; font-size: max(1rem, calc(20 * var(--s))); line-height: 1.3; }
+.note-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: max(0.85rem, calc(22 * var(--s))) max(1rem, calc(26 * var(--s))); flex: none; }
+.note-head h2 { font-size: max(1.2rem, calc(28 * var(--s))); line-height: 1.25; }
+.note-tog { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; padding: 0; background: none; border: 0; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: max(0.95rem, calc(18 * var(--s))); flex: none; white-space: nowrap; }
+.note-tog .box { width: 2.5rem; height: 2.5rem; }
+.note-tog:hover .box { outline: 2px solid var(--fg); outline-offset: 2px; }
+.note-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding: 0 max(1rem, calc(26 * var(--s))) max(1rem, calc(22 * var(--s))); }
+.note-lbl { margin: 0; font-weight: 700; color: var(--muted); }
+.note-refs { border-bottom: 1px solid var(--fg); flex: none; }
+.note-refs > p { padding: 0.5rem 0 0.85rem; color: var(--muted); font-size: max(0.95rem, calc(18 * var(--s))); }
+.nsec { border-top: 1px solid var(--fg); }
+.nsec h3 { font-size: inherit; }
+.nsec-b { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 2.75rem; padding: 0.45rem 0; background: none; border: 0; border-radius: 6px; cursor: pointer; text-align: left; font-weight: 700; font-size: inherit; line-height: 1.3; }
+.nsec-n { display: inline-block; min-width: 1.6em; margin-left: 0.4rem; padding: 0 0.4em; border-radius: 999px; background: var(--chip-bg); color: var(--chip-fg); font-size: 0.85em; font-weight: 700; text-align: center; }
+.nsec-b svg { width: 1.4rem; height: 1.4rem; }
+.nsec-b[aria-expanded="true"] svg { transform: rotate(180deg); }
+.nchips { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.1rem 0 0.85rem; }
+.nchip, .nadd { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.6rem; padding: 0.3rem 0.55rem 0.3rem 0.65rem; border: 1.5px solid var(--chip-line); border-radius: 6px; font-size: inherit; line-height: 1.25; text-align: left; }
+.nchip { background: var(--chip-bg); color: var(--chip-fg); cursor: pointer; }
+.nchip:hover { border-color: var(--chip-fg); }
+.nchip svg, .nadd svg { width: 1.1em; height: 1.1em; }
+.nadd { background: var(--ed-bg); color: var(--muted); border-color: var(--line); cursor: pointer; }
+.nadd:hover { color: var(--fg); border-color: var(--fg); }
+.nadd-in { cursor: text; color: var(--fg); }
+.nadd-in:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.nadd-in input { width: 11em; min-width: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; outline: none; }
+.nempty { padding: 0 0 0.85rem; color: var(--muted); font-size: max(0.95rem, calc(18 * var(--s))); }
+.note-pad { flex: 1 0 auto; display: flex; flex-direction: column; gap: 0.5rem; min-height: 16rem; }
+.note-box { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 13rem; background: var(--ed-bg); border: 3px solid var(--fg); border-radius: 22px 30px 20px 32px / 30px 20px 32px 22px; }
+.note-box:has(.note-ed:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+.note-ed { position: relative; flex: 1 1 auto; min-height: 7rem; overflow-y: auto; padding: 0.9rem 1.1rem 0.5rem; font-size: inherit; line-height: 1.45; overflow-wrap: anywhere; }
+.note-ed:focus-visible { outline: none; }
+.note-ed.is-empty::before { content: attr(data-placeholder); position: absolute; left: 1.1rem; right: 1.1rem; top: 0.9rem; color: var(--muted); pointer-events: none; }
+.note-ed ul { list-style: disc; padding-left: 1.4rem; }
+.note-ed ol { list-style: decimal; padding-left: 1.7rem; }
+.note-tools { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.5rem; padding: 0.3rem 0.6rem 0.6rem 0.75rem; flex: none; }
+.note-fmt { display: flex; flex-wrap: wrap; gap: 0.15rem; }
+.fmt { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; padding: 0; background: none; border: 2px solid transparent; border-radius: 6px; cursor: pointer; font-size: 1.15rem; line-height: 1; }
+.fmt:hover { border-color: var(--line); }
+.fmt[aria-pressed="true"] { background: var(--press-bg); border-color: var(--press-line); color: #111111; }
+.fmt svg { width: 1.35rem; height: 1.35rem; }
+.fmt-b { font-weight: 700; }
+.fmt-i { font-style: italic; font-family: Georgia, "Times New Roman", serif; }
+.fmt-u { text-decoration: underline; text-underline-offset: 0.15em; }
+.mic { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 3.25rem; height: 3.25rem; padding: 0; border: 0; border-radius: 50%; background: var(--mic-bg); color: #111111; box-shadow: 0 2px 7px rgba(0, 0, 0, 0.25); cursor: pointer; }
+.mic svg { width: 1.5rem; height: 1.5rem; }
+.mic:hover { outline: 2px solid var(--fg); outline-offset: 2px; }
+.mic[aria-pressed="true"] { background: var(--mic-on); color: #ffffff; }
+@media (prefers-reduced-motion: no-preference) {
+  .mic[aria-pressed="true"] { animation: mic-pulse 1.4s ease-in-out infinite; }
+  @keyframes mic-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(176, 58, 72, 0.55); } 50% { box-shadow: 0 0 0 0.55rem rgba(176, 58, 72, 0); } }
+}
+.note-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; flex: none; }
+.note-msg { flex: 1 1 9rem; margin: 0; color: var(--muted); font-size: max(0.9rem, calc(17 * var(--s))); }
+.note-acts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pill { min-height: 2.75rem; padding: 0.4rem 1.25rem; border: 2px solid var(--fg); border-radius: 999px; background: transparent; cursor: pointer; font-size: max(0.95rem, calc(18 * var(--s))); font-weight: 500; }
+.pill:hover { background: var(--accent-soft); }
+.pill.solid { background: var(--btn-bg); color: var(--btn-fg); border-color: var(--btn-bg); }
+.pill.solid:hover { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+/* Narrower screens: the bar at the bottom, and the panel it opens */
+.note-dock .note { position: fixed; z-index: 20; left: max(0.75rem, calc(40 * var(--s))); right: max(0.75rem, calc(40 * var(--s))); bottom: max(0.75rem, env(safe-area-inset-bottom, 0px)); max-width: 46rem; margin-inline: auto; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2); }
+.note-dock .note:not(.is-open) .note-head { cursor: pointer; }
+.note-dock .note.is-open { height: min(85vh, 52rem); height: min(85dvh, 52rem); }
+.note-scrim { position: fixed; inset: 0; z-index: 19; background: rgba(0, 0, 0, 0.4); }
+body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
+@media (max-width: 30rem) { .note-fmt { gap: 0; } .fmt { width: 2.2rem; } .mic { width: 2.85rem; height: 2.85rem; } .note-tools { padding-inline: 0.45rem 0.5rem; } }
+@media (prefers-reduced-motion: no-preference) {
+  .note-dock .note.is-open { animation: sheet-up 0.2s ease-out; }
+  @keyframes sheet-up { from { transform: translateY(1.5rem); opacity: 0.6; } }
+}
+
+/* Wide screens: the note column */
+@media (min-width: 80rem) {
+  .bottom.has-note, .turn-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--note-w); gap: var(--sec) max(2rem, calc(60 * var(--s))); align-items: stretch; }
+  .note-slot { display: block; }
+  .note-slot > .note { position: sticky; top: var(--note-top); }
+  .note-slot > .note.is-open { height: calc(100vh - 2 * var(--note-top)); height: calc(100dvh - 2 * var(--note-top)); }
+  /* Activity cards: Purpose, You Will Need and Materials stay as they are; Instructions + note in one row; Tips full width below */
+  .cols.act { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); grid-template-areas: "left mat" "bottom bottom" "tips tips"; grid-template-rows: auto; }
+  .cols.act .right { display: contents; }
+  .cols.act .mat { grid-area: mat; }
+  .cols.act .tips { grid-area: tips; }
+  /* Reference cards: the picks list lives in the note, so it isn't shown twice */
+  .turn-row .mm-list { display: none; }
+  .turn-row .mm-scroll { margin-right: -8px; padding-inline-end: 8px; }
+  .turn-row .mm-step.has-img { grid-template-columns: max(5rem, calc(100 * var(--s))) minmax(0, 1fr) minmax(0, 0.8fr); }
+}
 </style>
 
 <a class="skip" href="#main">Skip to content</a>
@@ -1011,6 +1107,8 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
   function renderCard(id, routeId) {
     var c = CARDS[id], meta = META[id] || {};
     pathCheck = null;
+    noteSlot = null;
+    refSync = null;
     var host = document.getElementById("card");
     host.replaceChildren();
 
@@ -1040,7 +1138,7 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       var rc = REFS[id];
       left.append(h("div", { class: "blk" }, h("h2", null, "Purpose"), h("p", null, rc.purpose || c.summary)));
       left.append(h("div", { class: "blk" }, h("h2", null, "You Will Need"), h("p", null, rc.need)));
-      right.append(h("div", { class: "blk" }, h("h2", null, "Materials"), h("p", null, "Note-taking supplies.")));
+      right.append(h("div", { class: "blk mat" }, h("h2", null, "Materials"), h("p", null, "Note-taking supplies.")));
       bottom.append(h("div", { class: "blk" }, h("h2", null, "A Starting Point, Not A Full List"), h("p", null, REF_START)));
     } else if (c.ref) {
       left.append(h("div", { class: "blk" }, h("h2", null, "What it is"), h("p", null, c.summary)));
@@ -1060,10 +1158,14 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       });
       var ins = h("div", { class: "blk" }, h("h2", null, "Instructions"), ol);
       if (d.record) ins.append(h("p", { class: "record" }, h("strong", null, "Keep A Record"), d.record + " Capture it now, while you still remember the options."));
-      bottom.append(ins);
+      /* On wide screens the note sits beside the Instructions (see .bottom.has-note) */
+      noteSlot = h("div", { class: "note-slot" });
+      bottom.classList.add("has-note");
+      bottom.append(ins, noteSlot);
+      cols.classList.add("act");
       var hasRefs = meta.refs && meta.refs.length;
       if (d.materials || hasRefs) {
-        right.append(h("div", { class: "blk" }, h("h2", null, "Materials"), d.materials ? h("p", null, d.materials) : null, hasRefs ? refButtons(meta.refs, routeId) : null));
+        right.append(h("div", { class: "blk mat" }, h("h2", null, "Materials"), d.materials ? h("p", null, d.materials) : null, hasRefs ? refButtons(meta.refs, routeId) : null));
       }
       if (d.tips) right.append(h("div", { class: "tips" }, h("h2", null, "Tips"), h("p", null, richText(d.tips, routeId))));
     }
@@ -1186,9 +1288,25 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
   };
   var CHECK = '<path d="M5 12.5l4.5 4.5L19 7.5"/>';
   var XMARK = '<path d="M6 6l12 12M18 6L6 18"/>';
-  /* Each card's list is kept while the page is open, so it is still there when you come back. */
-  var picks = {};
+  /* Each reference card's list (by example name) and the note are one shared record. It is saved in this browser as you go (see Keep A Note), so it is still there when you come back. */
+  var NOTE_KEY = "itr-keep-a-note-v1";
+  var store = { picks: {}, html: "", wideOpen: true, sec: {} };
+  var canSave = true;
+  try {
+    var saved = JSON.parse(localStorage.getItem(NOTE_KEY) || "null");
+    if (saved && typeof saved === "object") {
+      if (saved.picks && typeof saved.picks === "object") Object.keys(saved.picks).forEach(function (k) {
+        if (Array.isArray(saved.picks[k])) store.picks[k] = saved.picks[k].filter(function (x) { return typeof x === "string"; });
+      });
+      if (typeof saved.html === "string") store.html = saved.html;
+      store.wideOpen = saved.wideOpen !== false;
+      if (saved.sec && typeof saved.sec === "object") store.sec = saved.sec;
+    }
+  } catch (e) { canSave = false; }
+  var picks = store.picks;
   var mmCheck = null;
+  var noteSlot = null;  /* where the note goes on wide screens, set by renderCard */
+  var refSync = null;   /* lets the note update the reference card on screen */
 
   function exCard(label, type, mk) {
     if (mk) {
@@ -1209,7 +1327,6 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     var cfg = REFS[id], s2 = cfg.step2;
     var arr = picks[id] || (picks[id] = []);
     var boxes = {};
-    var items = s2 ? s2.items.slice() : [];
     var listH = s2 ? h("h3", { class: "mm-list-h", id: "mm-list-h", tabindex: "-1" }, s2.listTitle) : null;
     var picked = h("ul", { class: "mm-picked", "aria-labelledby": "mm-list-h" });
     var empty = h("p", { class: "mm-empty" }, "Nothing here yet. Select an example above to add it.");
@@ -1218,44 +1335,54 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
     function count() { return arr.length === 1 ? "1 item in your list." : arr.length + " items in your list."; }
     function renderPicked() {
       picked.replaceChildren();
-      arr.forEach(function (i) {
-        var b = h("button", { type: "button", class: "mm-chip", "data-i": i },
+      arr.forEach(function (label) {
+        var b = h("button", { type: "button", class: "mm-chip" },
           h("span", { class: "mm-tile", "aria-hidden": "true" }),
-          h("span", { class: "mm-name" }, items[i].t),
+          h("span", { class: "mm-name" }, label),
           h("span", { class: "mm-x", "aria-hidden": "true" }, svg(XMARK, 16)),
           h("span", { class: "sr" }, ". Remove from your list"));
-        b.addEventListener("click", function () { remove(i); });
+        b.dataset.l = label;
+        b.addEventListener("click", function () { remove(label); });
         picked.append(h("li", null, b));
       });
       picked.hidden = !arr.length;
       empty.hidden = !!arr.length;
     }
-    function remove(i) {
-      var pos = arr.indexOf(i);
+    function syncBoxes() {
+      Object.keys(boxes).forEach(function (l) { boxes[l].forEach(function (cb) { cb.checked = arr.indexOf(l) > -1; }); });
+    }
+    function remove(label) {
+      var pos = arr.indexOf(label);
       if (pos < 0) return;
       arr.splice(pos, 1);
-      if (boxes[i]) boxes[i].checked = false;
+      syncBoxes();
       renderPicked();
-      say("Removed " + items[i].t + ". " + count());
-      var next = arr.length ? picked.querySelector('[data-i="' + arr[Math.min(pos, arr.length - 1)] + '"]') : null;
+      noteChanged(id, true);
+      say("Removed " + label + ". " + count());
+      var nextL = arr.length ? arr[Math.min(pos, arr.length - 1)] : null;
+      var next = null;
+      Array.prototype.forEach.call(picked.querySelectorAll(".mm-chip"), function (b) { if (b.dataset.l === nextL) next = b; });
       (next || listH).focus();
     }
-    /* One checkbox per example. The same list holds the top examples and the extras. */
-    function makeBox(i) {
+    /* One checkbox per example. The same list holds the top examples, the extras, and anything added in the note. */
+    function makeBox(label) {
       var cb = h("input", { type: "checkbox" });
-      cb.checked = arr.indexOf(i) > -1;
-      boxes[i] = cb;
+      cb.checked = arr.indexOf(label) > -1;
+      (boxes[label] = boxes[label] || []).push(cb);
       cb.addEventListener("change", function () {
-        var pos = arr.indexOf(i);
-        if (cb.checked && pos < 0) arr.push(i);
+        var pos = arr.indexOf(label);
+        if (cb.checked && pos < 0) arr.push(label);
         if (!cb.checked && pos > -1) arr.splice(pos, 1);
+        syncBoxes();
         renderPicked();
-        say((cb.checked ? "Added " : "Removed ") + items[i].t + ". " + count());
+        noteChanged(id, true);
+        say((cb.checked ? "Added " : "Removed ") + label + ". " + count());
       });
       return cb;
     }
+    refSync = { id: id, fn: function () { syncBoxes(); renderPicked(); } };
     var selectable = !!s2 && cfg.layout !== "pictures";
-    var mkEx = selectable ? function (label, type) { items.push({ t: label }); return makeBox(items.length - 1); } : null;
+    var mkEx = selectable ? function (label) { return makeBox(label); } : null;
 
     /* 1. The examples */
     var exBody;
@@ -1287,8 +1414,8 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
         h("span", { class: "mm-pill" }, "Step 2"),
         h("div", { class: "mm-st" }, h("h3", null, s2.title), h("p", null, s2.text))));
 
-      var cards = h("ul", { class: "mm-cards" }, items.slice(0, nExtras).map(function (it, i) {
-        var cb = makeBox(i);
+      var cards = h("ul", { class: "mm-cards" }, s2.items.map(function (it) {
+        var cb = makeBox(it.t);
         var alt = it.g != null && cfg.groups && cfg.groups[it.g] ? cfg.groups[it.g].alt : null;
         return h("li", null, h("label", { class: "mm" }, cb,
           h("span", { class: "mm-card" },
@@ -1311,12 +1438,16 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       after = [h("p", { class: "mm-note" }, REF_NOTE), fs, h("div", { class: "mm-list" }, listH, picked, empty)];
     }
 
+    /* On wide screens the note sits beside "Now Your Turn" and holds the picks list (see .turn-row) */
+    noteSlot = h("div", { class: "note-slot" });
     return h("div", { class: "mm-main" },
       h("section", { class: "mm-sec", "aria-labelledby": "mm-ex" }, h("h2", { class: "sec-label", id: "mm-ex" }, cfg.exLabel),
         selectable ? [h("p", { class: "ex-hint" }, "Select any example that could apply to your design to add it to your list below."),
           h("fieldset", { class: "mm-fs" }, h("legend", { class: "sr" }, cfg.exLabel + ". Select any that could apply to your design."), exBody)] : exBody),
-      h("section", { class: "mm-sec" + (s2 && hasPath ? " mm-end" : ""), "aria-labelledby": "mm-turn" },
-        turn, h("div", { class: "mm-steps" }, steps), after));
+      h("div", { class: "turn-row" },
+        h("section", { class: "mm-sec" + (s2 && hasPath ? " mm-end" : ""), "aria-labelledby": "mm-turn" },
+          turn, h("div", { class: "mm-steps" }, steps), after),
+        noteSlot));
   }
 
   function changeLink() {
@@ -1362,6 +1493,495 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
   }
   var pathCheck = null;
 
+  /* ---------- Keep A Note For Record ---------- */
+  /* One note for the whole site. It holds what you selected on each reference card plus your own notes, and it follows you from page to page. */
+  var mqNote = window.matchMedia("(min-width: 80rem)");
+  var CHEV = '<path d="M6 9l6 6 6-6"/>';
+  var MIC = '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>';
+  var FMT = [
+    { cmd: "bold", label: "Bold", keys: "Control+B", text: "B", cls: "fmt-b" },
+    { cmd: "italic", label: "Italic", keys: "Control+I", text: "I", cls: "fmt-i" },
+    { cmd: "underline", label: "Underline", keys: "Control+U", text: "U", cls: "fmt-u" },
+    { cmd: "insertUnorderedList", label: "Bulleted list", icon: '<path d="M9.5 6h11M9.5 12h11M9.5 18h11"/><circle cx="4.5" cy="6" r="0.6"/><circle cx="4.5" cy="12" r="0.6"/><circle cx="4.5" cy="18" r="0.6"/>' },
+    { cmd: "insertOrderedList", label: "Numbered list", icon: '<path d="M10 6h10.5M10 12h10.5M10 18h10.5"/><path d="M3.5 4.5l1.5-1v5M3.3 11.2c.4-.8 2.6-.9 2.6.4 0 1-2.7 1.7-2.7 2.9h2.9M3.4 16.2h2.4l-1.3 1.4c1 0 1.6.4 1.6 1.2 0 1.2-2 1.4-2.8.6"/>' },
+    { cmd: "check", label: "Checklist", keys: "Control+Enter", icon: '<path d="M10.5 6h10M10.5 12h10M10.5 18h10"/><path d="M3 6l1.6 1.6L7.5 4.6M3 12l1.6 1.6 2.9-3M3 18l1.6 1.6 2.9-3"/>' }
+  ];
+  var BOX = "☐", DONE = "☑";
+  var wrapEl = document.querySelector(".wrap"), skipEl = document.querySelector(".skip");
+  var noteCur = null, noteRefs = [], adding = null, rendering = false, sheetOpen = false, onCard = false;
+  var lastRange = null, saveT = null, msgT = null, rec = null, recOn = false;
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  /* Live announcements must stay audible while the rest of the page is inert behind the open panel */
+  document.body.append(statusEl);
+
+  var noteTog = h("button", { type: "button", class: "note-tog", "aria-expanded": "false", "aria-controls": "note-body" },
+    h("span", { class: "note-tog-t" }, "Show Note"),
+    h("span", { class: "box", "aria-hidden": "true" }, svg(ICON.plus, 20, "i-plus"), svg(ICON.minus, 20, "i-minus")));
+  var noteHead = h("div", { class: "note-head" }, h("h2", { id: "note-title" }, "Keep A Note For Record"), noteTog);
+  var noteRefsEl = h("div", { class: "note-refs" });
+  var ed = h("div", { class: "note-ed", contenteditable: "true", role: "textbox", "aria-multiline": "true", "aria-labelledby": "note-lbl", "data-placeholder": "Start typing or recording your note", spellcheck: "true" });
+  ed.innerHTML = store.html;
+  var fmtBtns = FMT.map(function (f, i) {
+    var b = h("button", { type: "button", class: "fmt" + (f.cls ? " " + f.cls : ""), "aria-label": f.label, "aria-pressed": "false", title: f.label + (f.keys ? " (" + f.keys.replace("Control", "Ctrl") + ")" : ""), "aria-keyshortcuts": f.keys || null, tabindex: i ? "-1" : "0" },
+      f.text ? h("span", { "aria-hidden": "true" }, f.text) : svg(f.icon, 22));
+    b.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    b.addEventListener("click", function (e) {
+      var byKeyboard = e.detail === 0;
+      restoreSel();
+      if (f.cmd === "check") toggleCheck(); else { try { document.execCommand(f.cmd, false, null); } catch (err) {} }
+      if (byKeyboard) b.focus();
+      edChanged();
+    });
+    return b;
+  });
+  var fmtBar = h("div", { class: "note-fmt", role: "toolbar", "aria-label": "Text formatting", "aria-controls": "note-ed" }, fmtBtns);
+  ed.id = "note-ed";
+  /* Arrow keys move between the formatting buttons (one tab stop for the whole toolbar) */
+  fmtBar.addEventListener("keydown", function (e) {
+    var i = fmtBtns.indexOf(document.activeElement);
+    if (i < 0) return;
+    var j = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? fmtBtns.length - 1 : null;
+    if (j == null) return;
+    e.preventDefault();
+    j = (j + fmtBtns.length) % fmtBtns.length;
+    fmtBtns.forEach(function (b, k) { b.tabIndex = k === j ? 0 : -1; });
+    fmtBtns[j].focus();
+  });
+  var mic = h("button", { type: "button", class: "mic", "aria-pressed": "false", "aria-label": "Record a voice note", title: "Record a voice note" }, svg(MIC, 24));
+  var noteMsg = h("p", { class: "note-msg" });
+  var dlBtn = h("button", { type: "button", class: "pill" }, "Download");
+  var cpBtn = h("button", { type: "button", class: "pill solid" }, "Copy As Text");
+  var noteBody = h("div", { class: "note-body", id: "note-body" },
+    h("p", { class: "note-lbl" }, "Reference Cards"),
+    noteRefsEl,
+    h("div", { class: "note-pad" },
+      h("p", { class: "note-lbl", id: "note-lbl" }, "Note"),
+      h("div", { class: "note-box" }, ed, h("div", { class: "note-tools" }, fmtBar, mic)),
+      h("div", { class: "note-foot" }, noteMsg, h("div", { class: "note-acts" }, dlBtn, cpBtn))));
+  var noteEl = h("aside", { class: "note", "aria-labelledby": "note-title" }, noteHead, noteBody);
+  var scrim = h("div", { class: "note-scrim", hidden: true });
+  var dock = h("div", { class: "note-dock" });
+  document.body.append(scrim, dock);
+
+  function defaultMsg() { return recOn ? "Listening. Press the microphone again to stop." : canSave ? "Notes save as you type." : "Your note is kept while this page is open."; }
+  function flash(msg) {
+    noteMsg.textContent = msg;
+    statusEl.textContent = msg;
+    clearTimeout(msgT);
+    msgT = setTimeout(function () { noteMsg.textContent = defaultMsg(); }, 5000);
+  }
+  noteMsg.textContent = defaultMsg();
+
+  function saveNow() {
+    clearTimeout(saveT);
+    if (!canSave) return;
+    try { localStorage.setItem(NOTE_KEY, JSON.stringify({ picks: picks, html: ed.innerHTML, wideOpen: store.wideOpen, sec: store.sec })); }
+    catch (e) { canSave = false; noteMsg.textContent = defaultMsg(); }
+  }
+  function saveSoon() { clearTimeout(saveT); saveT = setTimeout(saveNow, 300); }
+  window.addEventListener("pagehide", saveNow);
+
+  /* ----- Open, close and placement ----- */
+  function isWide() { return mqNote.matches && !!noteSlot; }
+  function isOpen() { return isWide() ? store.wideOpen : sheetOpen; }
+  function applyOpen() {
+    var open = isOpen();
+    noteEl.classList.toggle("is-open", open);
+    noteBody.hidden = !open;
+    noteTog.setAttribute("aria-expanded", open ? "true" : "false");
+    noteTog.querySelector(".note-tog-t").textContent = open ? "Hide Note" : "Show Note";
+    noteTog.querySelector(".i-plus").style.display = open ? "none" : "";
+    noteTog.querySelector(".i-minus").style.display = open ? "" : "none";
+  }
+  function measureBar() {
+    if (!onCard || isWide() || sheetOpen) return;
+    var hgt = noteEl.offsetHeight;
+    document.documentElement.style.setProperty("--bar-h", hgt + "px");
+    document.documentElement.style.scrollPaddingBottom = (hgt + 24) + "px";
+  }
+  function placeNote() {
+    if (!onCard) return;
+    if (isWide()) {
+      if (sheetOpen) closeSheet(false);
+      noteSlot.append(noteEl);
+      document.body.classList.remove("note-bar");
+      document.documentElement.style.scrollPaddingBottom = "";
+    } else {
+      dock.append(noteEl);
+      document.body.classList.add("note-bar");
+    }
+    applyOpen();
+    measureBar();
+  }
+  function openSheet() {
+    sheetOpen = true;
+    noteEl.setAttribute("role", "dialog");
+    noteEl.setAttribute("aria-modal", "true");
+    scrim.hidden = false;
+    wrapEl.inert = true; skipEl.inert = true;
+    applyOpen();
+    noteTog.focus();
+  }
+  function closeSheet(returnFocus) {
+    sheetOpen = false;
+    noteEl.removeAttribute("role");
+    noteEl.removeAttribute("aria-modal");
+    scrim.hidden = true;
+    wrapEl.inert = false; skipEl.inert = false;
+    applyOpen();
+    measureBar();
+    if (returnFocus) noteTog.focus();
+  }
+  noteTog.addEventListener("click", function () {
+    if (isWide()) { store.wideOpen = !store.wideOpen; applyOpen(); saveSoon(); }
+    else if (sheetOpen) closeSheet(true);
+    else openSheet();
+  });
+  /* The whole bar opens the note, as in the collapsed design. The button stays for keyboard and screen reader use. */
+  noteHead.addEventListener("click", function (e) { if (!e.target.closest("button") && !isWide() && !sheetOpen) openSheet(); });
+  noteEl.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheetOpen) { e.preventDefault(); closeSheet(true); } });
+  scrim.addEventListener("click", function () { closeSheet(true); });
+  if (mqNote.addEventListener) mqNote.addEventListener("change", placeNote);
+  window.addEventListener("resize", measureBar);
+
+  function noteMount(id) {
+    onCard = true;
+    noteCur = id;
+    noteRefs = (!CARDS[id].ref && META[id] && META[id].refs) || [];
+    adding = null;
+    renderRefs();
+    placeNote();
+  }
+  function noteUnmount() {
+    if (!onCard) return;
+    onCard = false;
+    if (recOn && rec) rec.stop();
+    if (sheetOpen) closeSheet(false);
+    noteEl.remove();
+    document.body.classList.remove("note-bar");
+    document.documentElement.style.scrollPaddingBottom = "";
+  }
+
+  /* ----- Reference card lists inside the note ----- */
+  /* Shown: the reference card you're on, the ones this activity suggests, and any you've added something to. */
+  function refsShown() {
+    return Object.keys(CARDS).filter(function (k) {
+      return CARDS[k].ref && REFS[k] && ((picks[k] && picks[k].length) || k === noteCur || noteRefs.indexOf(k) > -1);
+    });
+  }
+  function optionLabels(k) {
+    var cfg = REFS[k], out = [].concat(cfg.strip || []);
+    (cfg.groups || []).forEach(function (g) { out = out.concat(g.cards || []); });
+    if (cfg.step2) out = out.concat(cfg.step2.items.map(function (x) { return x.t; }));
+    return out;
+  }
+  function noteChanged(k, fromPage) {
+    saveSoon();
+    if (!rendering) renderRefs();
+    if (!fromPage && refSync && refSync.id === k) refSync.fn();
+  }
+  function addPick(k, text) {
+    text = text.replace(/\s+/g, " ").trim();
+    if (!text) return false;
+    var match = null;
+    optionLabels(k).forEach(function (l) { if (!match && l.toLowerCase() === text.toLowerCase()) match = l; });
+    var label = match || text, arr = picks[k] || (picks[k] = []);
+    if (arr.some(function (l) { return l.toLowerCase() === label.toLowerCase(); })) { flash(label + " is already in your list."); return true; }
+    arr.push(label);
+    noteChanged(k, false);
+    statusEl.textContent = "Added " + label + " to " + CARDS[k].name + ".";
+    return true;
+  }
+  function removePick(k, label) {
+    var arr = picks[k] || [], pos = arr.indexOf(label);
+    if (pos < 0) return;
+    arr.splice(pos, 1);
+    noteChanged(k, false);
+    statusEl.textContent = "Removed " + label + " from " + CARDS[k].name + ".";
+    var nextL = arr.length ? arr[Math.min(pos, arr.length - 1)] : null, target = null;
+    Array.prototype.forEach.call(noteRefsEl.querySelectorAll(".nchip"), function (b) { if (b.dataset.k === k && b.dataset.l === nextL) target = b; });
+    if (!target) target = noteRefsEl.querySelector('.nadd[data-k="' + k + '"]');
+    if (target) target.focus();
+  }
+  function renderRefs(focusAdd) {
+    var toFocus = null;
+    rendering = true;
+    noteRefsEl.replaceChildren();
+    var shown = refsShown();
+    if (!shown.length) noteRefsEl.append(h("p", null, "What you select on reference cards shows up here."));
+    shown.forEach(function (k) {
+      var arr = picks[k] || [], name = CARDS[k].name;
+      var open = store.sec[k] != null ? !!store.sec[k] : k === noteCur;
+      var pid = "nsec-" + k;
+      var btn = h("button", { type: "button", class: "nsec-b", "aria-expanded": open ? "true" : "false", "aria-controls": pid },
+        h("span", null, nameNode(name), arr.length ? h("span", { class: "nsec-n" }, String(arr.length), h("span", { class: "sr" }, " selected")) : null),
+        svg(CHEV, 22));
+      btn.addEventListener("click", function () {
+        store.sec[k] = btn.getAttribute("aria-expanded") !== "true";
+        btn.setAttribute("aria-expanded", store.sec[k] ? "true" : "false");
+        panel.hidden = !store.sec[k];
+        saveSoon();
+      });
+      var ul = h("ul", { class: "nchips", "aria-label": name });
+      arr.forEach(function (label) {
+        var c = h("button", { type: "button", class: "nchip" }, label, svg(XMARK, 16), h("span", { class: "sr" }, ", remove"));
+        c.dataset.k = k; c.dataset.l = label;
+        c.addEventListener("click", function () { removePick(k, label); });
+        ul.append(h("li", null, c));
+      });
+      if (adding === k) {
+        var inp = h("input", { type: "text", "aria-label": "Add your own to " + name, placeholder: "Add More…", autocomplete: "off" });
+        inp.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            if (!inp.value.trim()) { adding = null; renderRefs(); focusAddBtn(k); return; }
+            addPick(k, inp.value);
+            renderRefs(true);
+          } else if (e.key === "Escape") {
+            e.preventDefault(); e.stopPropagation();
+            adding = null; renderRefs(); focusAddBtn(k);
+          }
+        });
+        inp.addEventListener("blur", function () {
+          if (rendering) return;
+          if (inp.value.trim()) addPick(k, inp.value);
+          adding = null; renderRefs();
+        });
+        ul.append(h("li", null, h("label", { class: "nadd nadd-in" }, inp, svg(ICON.plus, 16))));
+        if (focusAdd) toFocus = inp;
+      } else {
+        var add = h("button", { type: "button", class: "nadd" }, "Add More…", h("span", { class: "sr" }, " to " + name), svg(ICON.plus, 16));
+        add.dataset.k = k;
+        add.addEventListener("click", function () { adding = k; renderRefs(true); });
+        ul.append(h("li", null, add));
+      }
+      var panel = h("div", { id: pid, hidden: !open },
+        arr.length ? null : h("p", { class: "nempty" }, k === noteCur ? "Nothing here yet. Select an example on this page, or add your own." : "Nothing here yet. Add your own, or open the card to select examples."),
+        ul);
+      noteRefsEl.append(h("div", { class: "nsec" }, h("h3", null, btn), panel));
+    });
+    if (toFocus) toFocus.focus();
+    rendering = false;
+  }
+  function focusAddBtn(k) { var b = noteRefsEl.querySelector('.nadd[data-k="' + k + '"]'); if (b) b.focus(); }
+
+  /* ----- The note itself ----- */
+  try { document.execCommand("defaultParagraphSeparator", false, "div"); } catch (e) {}
+  function checkEmpty() { ed.classList.toggle("is-empty", !ed.textContent.trim() && !ed.querySelector("li")); }
+  function edChanged() { checkEmpty(); updateFmt(); saveSoon(); }
+  checkEmpty();
+  function endRange() {
+    var r = document.createRange();
+    var last = ed.lastElementChild && /^(DIV|P)$/.test(ed.lastElementChild.tagName) ? ed.lastElementChild : ed;
+    r.selectNodeContents(last);
+    r.collapse(false);
+    return r;
+  }
+  function restoreSel() {
+    ed.focus();
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(lastRange && ed.contains(lastRange.startContainer) ? lastRange : endRange());
+  }
+  document.addEventListener("selectionchange", function () {
+    var s = window.getSelection();
+    if (s.rangeCount && ed.contains(s.anchorNode)) { lastRange = s.getRangeAt(0).cloneRange(); updateFmt(); }
+  });
+  function curBlock() {
+    var s = window.getSelection();
+    if (!s.rangeCount || !ed.contains(s.anchorNode)) return null;
+    var el = s.anchorNode.nodeType === 1 ? s.anchorNode : s.anchorNode.parentNode;
+    while (el && el !== ed && !/^(DIV|P|LI)$/.test(el.tagName)) el = el.parentNode;
+    return el;
+  }
+  function firstText(el) {
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), t;
+    while ((t = w.nextNode())) { if (t.nodeValue.length) return t; }
+    return null;
+  }
+  function isCheck(el) { var t = el && el !== ed ? firstText(el) : null; return !!t && (t.nodeValue.charAt(0) === BOX || t.nodeValue.charAt(0) === DONE); }
+  function caretToEnd(el) {
+    var r = document.createRange(), w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), t, last = null;
+    while ((t = w.nextNode())) last = t;
+    if (last) r.setStart(last, last.nodeValue.length); else r.selectNodeContents(el);
+    r.collapse(!last);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  /* Checklist: the button turns the line into a checklist item (☐) or back. Click the box, or press Ctrl+Enter, to tick it (☑). The boxes stay readable in the copied text. */
+  function toggleCheck() {
+    var b = curBlock();
+    if (!b || b === ed) { try { document.execCommand("formatBlock", false, "div"); } catch (e) {} b = curBlock(); }
+    if (!b || b === ed) return;
+    var t = firstText(b);
+    if (isCheck(b)) t.nodeValue = t.nodeValue.replace(/^[☐☑][\s ]?/, "");
+    else if (t) t.nodeValue = BOX + " " + t.nodeValue;
+    else b.insertBefore(document.createTextNode(BOX + " "), b.firstChild);
+    caretToEnd(b);
+  }
+  function tick(b) {
+    var t = firstText(b), was = t.nodeValue.charAt(0) === DONE;
+    t.nodeValue = (was ? BOX : DONE) + t.nodeValue.slice(1);
+    statusEl.textContent = was ? "Unticked." : "Ticked.";
+    edChanged();
+  }
+  ed.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    var b = curBlock();
+    if ((e.ctrlKey || e.metaKey) && isCheck(b)) { e.preventDefault(); tick(b); return; }
+    /* Enter on an empty checklist item ends the checklist */
+    if (isCheck(b) && !b.textContent.replace(/^[☐☑]/, "").trim()) {
+      e.preventDefault();
+      firstText(b).nodeValue = "";
+      if (!b.textContent) b.append(h("br"));
+      caretToEnd(b);
+      edChanged();
+    }
+  });
+  ed.addEventListener("input", function (e) {
+    /* A new line after a checklist item starts as a checklist item too */
+    if (e.inputType === "insertParagraph") {
+      var b = curBlock(), prev = b && b !== ed ? b.previousElementSibling : null;
+      if (prev && isCheck(prev) && !isCheck(b)) {
+        var t = firstText(b);
+        if (t) t.nodeValue = BOX + " " + t.nodeValue; else b.insertBefore(document.createTextNode(BOX + " "), b.firstChild);
+        var r = document.createRange(), ft = firstText(b);
+        r.setStart(ft, 2); r.collapse(true);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      }
+    }
+    edChanged();
+  });
+  ed.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("div, p, li") : null;
+    if (!b || b === ed || !ed.contains(b) || !isCheck(b)) return;
+    if (e.clientX - b.getBoundingClientRect().left < 26) tick(b);
+  });
+  /* Paste as plain text, so the note doesn't fill up with other sites' styling */
+  ed.addEventListener("paste", function (e) {
+    var t = e.clipboardData && e.clipboardData.getData("text/plain");
+    if (t == null) return;
+    e.preventDefault();
+    document.execCommand("insertText", false, t);
+  });
+  function updateFmt() {
+    var inEd = (function () { var s = window.getSelection(); return s.rangeCount && ed.contains(s.anchorNode); })();
+    FMT.forEach(function (f, i) {
+      var on = false;
+      if (inEd) {
+        if (f.cmd === "check") on = isCheck(curBlock());
+        else { try { on = document.queryCommandState(f.cmd); } catch (e) {} }
+      }
+      fmtBtns[i].setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  /* ----- Voice notes (browser speech recognition; Chrome, Edge and Safari) ----- */
+  function setRec(on) {
+    recOn = on;
+    mic.setAttribute("aria-pressed", on ? "true" : "false");
+    mic.setAttribute("aria-label", on ? "Stop recording" : "Record a voice note");
+    mic.title = on ? "Stop recording" : "Record a voice note";
+    clearTimeout(msgT);
+    noteMsg.textContent = defaultMsg();
+    statusEl.textContent = on ? "Recording. Speak, then press the microphone again to stop." : "Recording stopped.";
+  }
+  function insertSpoken(text) {
+    text = text.trim();
+    if (!text) return;
+    var r = (lastRange && ed.contains(lastRange.startContainer) ? lastRange : endRange()).cloneRange();
+    r.deleteContents();
+    var before = "";
+    if (r.startContainer.nodeType === 3 && r.startOffset > 0) before = r.startContainer.nodeValue.charAt(r.startOffset - 1);
+    var node = document.createTextNode((before && !/\s/.test(before) ? " " : "") + text + " ");
+    r.insertNode(node);
+    r.setStartAfter(node); r.collapse(true);
+    lastRange = r;
+    if (document.activeElement === ed) { var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+    edChanged();
+  }
+  mic.addEventListener("click", function () {
+    if (!SR) { flash("Voice notes aren't available in this browser. Try Chrome, Edge or Safari, or type your note."); return; }
+    if (recOn && rec) { rec.stop(); return; }
+    rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.lang = document.documentElement.lang || navigator.language || "en-US";
+    rec.onresult = function (e) {
+      for (var i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) insertSpoken(e.results[i][0].transcript);
+    };
+    rec.onerror = function (e) {
+      flash(e.error === "not-allowed" || e.error === "service-not-allowed" ? "Microphone access is blocked. Allow it in your browser to record." : e.error === "no-speech" ? "No speech heard. Try again." : "Recording stopped.");
+    };
+    rec.onend = function () { if (recOn) setRec(false); };
+    try { rec.start(); setRec(true); } catch (err) { flash("Couldn't start recording."); }
+  });
+
+  /* ----- Download and Copy As Text ----- */
+  function toText(root) {
+    var out = "";
+    function nl() { if (out && out.slice(-1) !== "\n") out += "\n"; }
+    function go(n) {
+      if (n.nodeType === 3) { out += n.nodeValue; return; }
+      if (n.nodeType !== 1) return;
+      var t = n.tagName;
+      if (t === "BR") { out += "\n"; return; }
+      if (t === "UL" || t === "OL") {
+        var i = 0;
+        nl();
+        Array.prototype.forEach.call(n.children, function (li) {
+          if (li.tagName !== "LI") return;
+          nl();
+          out += t === "OL" ? (++i) + ". " : "- ";
+          Array.prototype.forEach.call(li.childNodes, go);
+          nl();
+        });
+        return;
+      }
+      var block = /^(DIV|P|LI|H[1-6])$/.test(t);
+      if (block) nl();
+      Array.prototype.forEach.call(n.childNodes, go);
+      if (block) nl();
+    }
+    Array.prototype.forEach.call(root.childNodes, go);
+    return out.replace(/ /g, " ").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  }
+  function noteText() {
+    var lines = ["Keep A Note For Record", ""];
+    Object.keys(CARDS).forEach(function (k) {
+      var a = picks[k];
+      if (!CARDS[k].ref || !a || !a.length) return;
+      lines.push(CARDS[k].name);
+      a.forEach(function (l) { lines.push("- " + l); });
+      lines.push("");
+    });
+    lines.push("Note");
+    lines.push(toText(ed) || "(No note yet.)");
+    return lines.join("\n") + "\n";
+  }
+  dlBtn.addEventListener("click", function () {
+    try {
+      var url = URL.createObjectURL(new Blob([noteText()], { type: "text/plain;charset=utf-8" }));
+      var a = h("a", { href: url, download: "keep-a-note.txt", hidden: true });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      flash("Downloaded keep-a-note.txt.");
+    } catch (e) { flash("Couldn't download here. Try Copy As Text."); }
+  });
+  cpBtn.addEventListener("click", function () {
+    var txt = noteText();
+    function fallback() {
+      var ta = h("textarea", { readonly: true, style: "position:fixed;left:-9999px;opacity:0" });
+      ta.value = txt;
+      document.body.append(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      ta.remove(); cpBtn.focus();
+      flash(ok ? "Copied your note as text." : "Couldn't copy here. Try Download.");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { flash("Copied your note as text."); }, fallback);
+    else fallback();
+  });
+
   /* Return goes to the previous page in the app. With no earlier page it goes to the main page. */
   var stack = [location.hash];
   var scrollMem = {}, lastHash = location.hash;
@@ -1382,11 +2002,13 @@ body.on-card footer { margin-top: max(4rem, calc(200 * var(--s))); }
       window.scrollTo(0, 0);
       document.getElementById("card-title").focus();
       document.title = CARDS[m[1]].name + " | Inclusive Design Pathfinder";
+      noteMount(m[1]);
       if (pathCheck) pathCheck();
       if (mmCheck) mmCheck();
     } else {
       cardView.hidden = true; home.hidden = false;
       document.body.classList.remove("on-card");
+      noteUnmount();
       document.title = "Inclusive Design Pathfinder";
       if (fromEvent) {
         window.scrollTo(0, 0);
