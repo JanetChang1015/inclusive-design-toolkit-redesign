@@ -471,15 +471,14 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
 
 /* Wide screens: the note column */
 @media (min-width: 80rem) {
-  body.note-col .bottom.has-note, body.note-col .turn-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--note-w); gap: var(--sec) max(2rem, calc(60 * var(--s))); align-items: stretch; }
+  body.note-col .turn-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--note-w); gap: var(--sec) max(2rem, calc(60 * var(--s))); align-items: stretch; }
   body.note-col .note-slot { display: block; }
-  .note-slot > .note { position: sticky; top: var(--note-top); }
+  .turn-row .note-slot > .note { position: sticky; top: var(--note-top); }
   .note-slot > .note.is-open { height: calc(100vh - 2 * var(--note-top)); height: calc(100dvh - 2 * var(--note-top)); }
-  /* Activity cards: Purpose, You Will Need and Materials stay as they are; Instructions + note in one row; Tips full width below */
-  .cols.act { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); grid-template-areas: "left mat" "bottom bottom" "tips tips"; grid-template-rows: auto; }
-  .cols.act .right { display: contents; }
-  .cols.act .mat { grid-area: mat; }
-  .cols.act .tips { grid-area: tips; }
+  /* Activity cards keep the card template layout (Purpose, You Will Need, Instructions on the left; Materials, Tips on the right).
+     The open note goes in the right column under Tips and stays in view while you scroll the Instructions. */
+  body.note-col .cols.act .right { align-self: stretch; }
+  body.note-col .cols.act .note-slot { position: sticky; top: var(--note-top); }
   /* Reference cards: while the note is open beside it, the picks list lives in the note, so it isn't shown twice. Hide the note and the list is back on the page. */
   body.note-col .turn-row .mm-list { display: none; }
   body.note-col .turn-row .mm-scroll { margin-right: -8px; padding-inline-end: 8px; }
@@ -1163,16 +1162,16 @@ body.note-bar { padding-bottom: calc(var(--bar-h, 5rem) + 1.75rem); }
       });
       var ins = h("div", { class: "blk" }, h("h2", null, "Instructions"), ol);
       if (d.record) ins.append(h("p", { class: "record" }, h("strong", null, "Keep A Record"), d.record + " Capture it now, while you still remember the options."));
-      /* On wide screens the note sits beside the Instructions (see .bottom.has-note) */
-      noteSlot = h("div", { class: "note-slot" });
-      bottom.classList.add("has-note");
-      bottom.append(ins, noteSlot);
+      bottom.append(ins);
       cols.classList.add("act");
       var hasRefs = meta.refs && meta.refs.length;
       if (d.materials || hasRefs) {
         right.append(h("div", { class: "blk mat" }, h("h2", null, "Materials"), d.materials ? h("p", null, d.materials) : null, hasRefs ? refButtons(meta.refs, routeId) : null));
       }
       if (d.tips) right.append(h("div", { class: "tips" }, h("h2", null, "Tips"), h("p", null, richText(d.tips, routeId))));
+      /* On wide screens the open note sits in this column, under Tips */
+      noteSlot = h("div", { class: "note-slot" });
+      right.append(noteSlot);
     }
 
     host.append(ret, top, cols);
